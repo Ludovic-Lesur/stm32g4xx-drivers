@@ -201,7 +201,6 @@ USART_status_t USART_init(USART_instance_t instance, const USART_gpio_t* pins, U
         break;
     case RCC_CLOCK_HSI:
         RCC->CCIPR |= (0b10 << USART_DESCRIPTOR[instance].rcc_ccipr_shift);
-        RCC_set_hsi_in_stop_mode(1);
         break;
     case RCC_CLOCK_LSE:
         RCC->CCIPR |= (0b11 << USART_DESCRIPTOR[instance].rcc_ccipr_shift);
@@ -302,9 +301,6 @@ USART_status_t USART_de_init(USART_instance_t instance, const USART_gpio_t* pins
     if (usart_ctx[instance].init_flag == 0) {
         status = USART_ERROR_UNINITIALIZED;
         goto errors;
-    }
-    if (((RCC->CCIPR >> USART_DESCRIPTOR[instance].rcc_ccipr_shift) & 0x03) == 0b10) {
-        RCC_set_hsi_in_stop_mode(0);
     }
     // Disable USART alternate function.
     GPIO_configure((pins->tx), GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);

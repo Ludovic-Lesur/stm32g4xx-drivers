@@ -91,8 +91,6 @@ static LPUART_status_t _LPUART_set_baud_rate(uint32_t baud_rate) {
     // Select peripheral clock.
     RCC->CCIPR &= ~(0b11 << 10); // Reset bits 10-11.
 #if (STM32G4XX_DRIVERS_RCC_LSE_MODE == 0)
-    // Enable HSI in stop mode.
-    RCC_set_hsi_in_stop_mode(1);
     // Use HSI.
     RCC->CCIPR |= (0b10 << 10); // LPUART1SEL='10'.
     lpuart_clock = RCC_CLOCK_HSI;
@@ -106,8 +104,6 @@ static LPUART_status_t _LPUART_set_baud_rate(uint32_t baud_rate) {
         lpuart_clock = RCC_CLOCK_LSE;
     }
     else {
-        // Enable HSI in stop mode.
-        RCC_set_hsi_in_stop_mode(1);
         // Use HSI.
         RCC->CCIPR |= (0b10 << 10); // LPUART1SEL='10'.
         lpuart_clock = RCC_CLOCK_HSI;
@@ -242,8 +238,6 @@ LPUART_status_t LPUART_de_init(const LPUART_gpio_t* pins) {
         status = LPUART_ERROR_UNINITIALIZED;
         goto errors;
     }
-    // Disable HSI in stop mode.
-    RCC_set_hsi_in_stop_mode(0);
     // Disable line.
     EXTI_disable_line(EXTI_LINE_LPUART1);
     // Disable LPUART alternate function.
