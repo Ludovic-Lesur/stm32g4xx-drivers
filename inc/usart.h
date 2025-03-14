@@ -14,6 +14,7 @@
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+#include "error.h"
 #include "gpio.h"
 #include "rcc.h"
 #include "types.h"
@@ -38,7 +39,7 @@ typedef enum {
     USART_ERROR_RS485_MODE,
     USART_ERROR_TC_TIMEOUT,
     // Last base value.
-    USART_ERROR_BASE_LAST = 0x0100
+    USART_ERROR_BASE_LAST = ERROR_BASE_STEP
 } USART_status_t;
 
 /*!******************************************************************

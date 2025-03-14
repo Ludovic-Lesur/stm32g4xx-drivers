@@ -8,6 +8,7 @@
 #ifndef __FLASH_H__
 #define __FLASH_H__
 
+#include "error.h"
 #include "types.h"
 
 /*** FLASH macros ***/
@@ -37,7 +38,7 @@ typedef enum {
     FLASH_ERROR_READ,
     FLASH_ERROR_WRITE,
     // Last base value.
-    FLASH_ERROR_BASE_LAST = 0x0100
+    FLASH_ERROR_BASE_LAST = ERROR_BASE_STEP
 } FLASH_status_t;
 
 /*** FLASH functions ***/

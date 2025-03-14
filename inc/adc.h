@@ -14,6 +14,7 @@
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+#include "error.h"
 #include "gpio.h"
 #include "lptim.h"
 #include "maths.h"
@@ -67,7 +68,7 @@ typedef enum {
     ADC_ERROR_DATA,
     ADC_ERROR_CONVERSION_TIMEOUT,
     // Low level drivers errors.
-    ADC_ERROR_BASE_LPTIM = 0x0100,
+    ADC_ERROR_BASE_LPTIM = ERROR_BASE_STEP,
     ADC_ERROR_BASE_MATH = (ADC_ERROR_BASE_LPTIM + LPTIM_ERROR_BASE_LAST),
     // Last base value.
     ADC_ERROR_BASE_LAST = (ADC_ERROR_BASE_MATH + MATH_ERROR_BASE_LAST)

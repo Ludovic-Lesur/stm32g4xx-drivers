@@ -11,6 +11,7 @@
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+#include "error.h"
 #include "nvic.h"
 #include "rcc.h"
 #include "types.h"
@@ -46,7 +47,7 @@ typedef enum {
     RTC_ERROR_ALARM,
     RTC_ERROR_ALARM_MODE,
     // Last base value.
-    RTC_ERROR_BASE_LAST = 0x0100
+    RTC_ERROR_BASE_LAST = ERROR_BASE_STEP
 } RTC_status_t;
 
 #if ((STM32G4XX_DRIVERS_RTC_ALARM_MASK & RTC_ALARM_MASK_ALL) != 0)

@@ -11,6 +11,7 @@
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+#include "error.h"
 #include "flash.h"
 #include "types.h"
 
@@ -28,7 +29,7 @@ typedef enum {
     NVM_ERROR_ADDRESS,
     NVM_ERROR_RECURSIVE_CALL,
     // Low level drivers errors.
-    NVM_ERROR_BASE_FLASH = 0x0100,
+    NVM_ERROR_BASE_FLASH = ERROR_BASE_STEP,
     // Last base value.
     NVM_ERROR_BASE_LAST = (NVM_ERROR_BASE_FLASH + FLASH_ERROR_BASE_LAST)
 } NVM_status_t;

@@ -14,6 +14,7 @@
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+#include "error.h"
 #include "gpio.h"
 #include "maths.h"
 #include "rcc.h"
@@ -62,7 +63,7 @@ typedef enum {
     TIM_ERROR_SAMPLING_FREQUENCY_OVERFLOW,
     TIM_ERROR_CAPTURE_PRESCALER,
     // Low level drivers errors.
-    TIM_ERROR_BASE_RCC = 0x0100,
+    TIM_ERROR_BASE_RCC = ERROR_BASE_STEP,
     TIM_ERROR_BASE_MATH = (TIM_ERROR_BASE_RCC + RCC_ERROR_BASE_LAST),
     // Last base value.
     TIM_ERROR_BASE_LAST = (TIM_ERROR_BASE_MATH + MATH_ERROR_BASE_LAST)
