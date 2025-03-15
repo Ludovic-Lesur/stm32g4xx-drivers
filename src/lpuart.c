@@ -43,7 +43,7 @@ typedef struct {
 
 /*** LPUART local global variables ***/
 
-static uint8_t LPUART_PRESCALER[LPUART_NUMBER_OF_PRESCALER_VALUES] = { 0, 1, 3, 5, 7, 9, 11, 15, 31, 63, 127, 255 };
+static const uint8_t LPUART_PRESCALER[LPUART_NUMBER_OF_PRESCALER_VALUES] = { 0, 1, 3, 5, 7, 9, 11, 15, 31, 63, 127, 255 };
 
 static LPUART_context_t lpuart_ctx = {
     .init_flag = 0,
