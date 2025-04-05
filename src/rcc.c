@@ -59,7 +59,6 @@ typedef struct {
     RCC_system_clock_t current_sysclk;
     RCC_system_clock_t previous_sysclk;
     uint32_t clock_frequency[RCC_CLOCK_LAST];
-    uint8_t hsi_stop_mode_request_count;
 } RCC_context_t;
 
 /*** RCC local global variables ***/
@@ -284,12 +283,11 @@ RCC_status_t RCC_init(uint8_t nvic_priority) {
     for (idx = 0; idx < RCC_CLOCK_LAST; idx++) {
         rcc_ctx.clock_frequency[idx] = 0;
     }
-    rcc_ctx.clock_frequency[RCC_CLOCK_SYSTEM] = rcc_ctx.clock_frequency[rcc_ctx.current_sysclk.source];
     rcc_ctx.clock_frequency[RCC_CLOCK_HSI] = RCC_HSI_FREQUENCY_TYPICAL_HZ;
     rcc_ctx.clock_frequency[RCC_CLOCK_HSE] = STM32G4XX_DRIVERS_RCC_HSE_FREQUENCY_HZ;
     rcc_ctx.clock_frequency[RCC_CLOCK_LSI] = RCC_LSI_FREQUENCY_TYPICAL_HZ;
     rcc_ctx.clock_frequency[RCC_CLOCK_LSE] = STM32G4XX_DRIVERS_RCC_LSE_FREQUENCY_HZ;
-    rcc_ctx.hsi_stop_mode_request_count = 0;
+    rcc_ctx.clock_frequency[RCC_CLOCK_SYSTEM] = rcc_ctx.clock_frequency[rcc_ctx.current_sysclk.source];
     // Set interrupt priority.
     NVIC_set_priority(NVIC_INTERRUPT_RCC, nvic_priority);
     // Start low speed oscillators.
@@ -488,7 +486,7 @@ RCC_status_t RCC_switch_to_pll(RCC_pll_configuration_t* pll_configuration) {
     status = _RCC_switch_system_clock(RCC_CLOCK_PLL, RCC_ERROR_PLL_SWITCH);
     if (status != RCC_SUCCESS) goto errors;
     // Update flash latency.
-    status = _RCC_update_flash_latency(pll_r_hz, 0);
+    status = _RCC_update_flash_latency(pll_r_hz, 1);
     if (status != RCC_SUCCESS) goto errors;
     // Save PLL configuration.
     rcc_ctx.current_sysclk.pll_configuration.source = (pll_configuration->source);
@@ -662,6 +660,8 @@ RCC_status_t RCC_get_status(RCC_clock_t clock, uint8_t* clock_is_ready) {
         status = RCC_ERROR_NULL_PARAMETER;
         goto errors;
     }
+    // Reset result.
+    (*clock_is_ready) = 0;
     // Check clock.
     switch (clock) {
     case RCC_CLOCK_SYSTEM:
