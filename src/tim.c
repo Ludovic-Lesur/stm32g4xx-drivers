@@ -39,8 +39,6 @@
 #define TIM_CAL_MEDIAN_FILTER_SIZE          9
 #define TIM_CAL_CENTER_AVERAGE_SIZE         3
 
-#define TIM_PWM_DUTY_CYCLE_PERCENT_MAX      100
-
 /*** TIM local structures ***/
 
 /*******************************************************************/
@@ -1123,7 +1121,7 @@ TIM_status_t TIM_PWM_set_waveform(TIM_instance_t instance, TIM_channel_t channel
         status = TIM_ERROR_FREQUENCY;
         goto errors;
     }
-    if (duty_cycle_percent > TIM_PWM_DUTY_CYCLE_PERCENT_MAX) {
+    if (duty_cycle_percent > MATH_PERCENT_MAX) {
         status = TIM_ERROR_DUTY_CYCLE;
         goto errors;
     }
@@ -1138,7 +1136,7 @@ TIM_status_t TIM_PWM_set_waveform(TIM_instance_t instance, TIM_channel_t channel
     if (status != TIM_SUCCESS) goto errors;
     // Set duty cycle.
     reg_value = (TIM_DESCRIPTOR[instance].peripheral->CCRx[channel] & (~(TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt)));
-    reg_value |= (((arr + 1) - (((arr + 1) * duty_cycle_percent) / (TIM_PWM_DUTY_CYCLE_PERCENT_MAX))) & TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt);
+    reg_value |= (((arr + 1) - (((arr + 1) * duty_cycle_percent) / (MATH_PERCENT_MAX))) & TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt);
     TIM_DESCRIPTOR[instance].peripheral->CCRx[channel] = reg_value;
     // Re-enable update event.
     TIM_DESCRIPTOR[instance].peripheral->CR1 &= ~(0b1 << 1);
