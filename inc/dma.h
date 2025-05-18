@@ -5,6 +5,12 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __DMA_H__
 #define __DMA_H__
 
@@ -250,3 +256,5 @@ DMA_status_t DMA_get_number_of_transfered_data(DMA_instance_t instance, DMA_chan
 #endif /* STM32G4XX_DRIVERS_DMA_CHANNEL_MASK */
 
 #endif /* __DMA_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

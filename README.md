@@ -25,6 +25,7 @@ Here is the versions compatibility table:
 | **Flag name** | **Value** | **Description** |
 |:---:|:---:|:---:|
 | `STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE` | `defined` / `undefined` | Disable the `stm32g4xx_drivers_flags.h` header file inclusion when compilation flags are given in the project settings or by command line. |
+| `STM32G4XX_DRIVERS_DISABLE` | `defined` / `undefined` | Disable the STM32G4xx drivers. |
 | `STM32G4XX_DRIVERS_ADC_MODE_MASK` | `0x00` to `0x03` | 2-bits field which defines the ADC operation modes: `0` = single `1` = sequence |
 | `STM32G4XX_DRIVERS_ADC_VREF_MV` | `<value>` | If defined, gives the external reference voltage provided to the VREF+ pin. |
 | `STM32G4XX_DRIVERS_DMA_CHANNEL_MASK` | `0x0000` to `0xFFFF` | 16-bits field which defines the enabled DMA channels. |

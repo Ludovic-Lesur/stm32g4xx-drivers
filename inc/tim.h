@@ -5,14 +5,17 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __TIM_H__
 #define __TIM_H__
 
 #ifndef STM32G4XX_REGISTERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_registers_flags.h"
-#endif
-#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
-#include "stm32g4xx_drivers_flags.h"
 #endif
 #include "error.h"
 #include "gpio.h"
@@ -494,3 +497,5 @@ uint32_t TIM_get_ccr_register_address(TIM_instance_t instance, TIM_channel_t cha
 #endif /* STM32G4XX_DRIVERS_TIM_MODE_MASK */
 
 #endif /* __TIM_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

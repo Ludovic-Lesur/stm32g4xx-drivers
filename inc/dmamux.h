@@ -5,6 +5,12 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __DMAMUX_H__
 #define __DMAMUX_H__
 
@@ -135,3 +141,5 @@ typedef enum {
 } DMAMUX_peripheral_request_t;
 
 #endif /* __DMAMUX_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

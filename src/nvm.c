@@ -5,11 +5,14 @@
  *      Author: Ludo
  */
 
-#include "nvm.h"
-
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
+#include "nvm.h"
+
 #include "error.h"
 #include "flash.h"
 #include "maths.h"
@@ -227,3 +230,5 @@ errors:
     nvm_ctx.flash_erase_count = 0;
     return status;
 }
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

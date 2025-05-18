@@ -5,6 +5,12 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #include "adc.h"
 
 #include "adc_registers.h"
@@ -1022,3 +1028,5 @@ errors:
     UNUSED(status);
     return slave_dr_address;
 }
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

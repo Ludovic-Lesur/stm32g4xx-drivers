@@ -5,6 +5,12 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __FPU_H__
 #define __FPU_H__
 
@@ -29,3 +35,5 @@ void FPU_init(void);
 void FPU_de_init(void);
 
 #endif /* __FPU_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

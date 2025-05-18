@@ -5,11 +5,14 @@
  *      Author: Ludo
  */
 
-#include "exti.h"
-
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
+#include "exti.h"
+
 #include "exti_registers.h"
 #include "gpio.h"
 #include "nvic.h"
@@ -324,3 +327,5 @@ void EXTI_clear_gpio_flag(const GPIO_pin_t* gpio) {
 }
 
 #endif /* STM32G4XX_DRIVERS_EXTI_GPIO_MASK */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

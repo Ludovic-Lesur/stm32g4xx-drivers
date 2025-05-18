@@ -5,6 +5,12 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __LPTIM_H__
 #define __LPTIM_H__
 
@@ -83,3 +89,5 @@ LPTIM_status_t LPTIM_delay_milliseconds(uint32_t delay_ms, LPTIM_delay_mode_t de
 #define LPTIM_stack_exit_error(base, code) { ERROR_check_stack_exit(lptim_status, LPTIM_SUCCESS, base, code) }
 
 #endif /* __LPTIM_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

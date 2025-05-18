@@ -5,14 +5,17 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __ADC_H__
 #define __ADC_H__
 
 #ifndef STM32G4XX_REGISTERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_registers_flags.h"
-#endif
-#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
-#include "stm32g4xx_drivers_flags.h"
 #endif
 #include "error.h"
 #include "gpio.h"
@@ -433,3 +436,5 @@ uint32_t ADC_get_slave_dr_register_address(ADC_instance_t instance);
 #define ADC_stack_exit_error(base, code) { ERROR_check_stack_exit(adc_status, ADC_SUCCESS, base, code) }
 
 #endif /* __ADC_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

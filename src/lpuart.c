@@ -5,11 +5,14 @@
  *      Author: Ludo
  */
 
-#include "lpuart.h"
-
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
+#include "lpuart.h"
+
 #include "exti.h"
 #include "gpio.h"
 #include "lpuart_registers.h"
@@ -360,3 +363,5 @@ uint32_t LPUART_get_rdr_register_address(void) {
     uint32_t rdr_address = ((uint32_t) &(LPUART1->RDR));
     return rdr_address;
 }
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

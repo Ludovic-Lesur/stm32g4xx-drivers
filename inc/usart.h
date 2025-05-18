@@ -5,14 +5,17 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __USART_H__
 #define __USART_H__
 
 #ifndef STM32G4XX_REGISTERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_registers_flags.h"
-#endif
-#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
-#include "stm32g4xx_drivers_flags.h"
 #endif
 #include "error.h"
 #include "gpio.h"
@@ -195,3 +198,5 @@ uint32_t USART_get_rdr_register_address(USART_instance_t instance);
 #define USART_stack_exit_error(base, code) { ERROR_check_stack_exit(usart_status, USART_SUCCESS, base, code) }
 
 #endif /* __USART_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

@@ -5,12 +5,15 @@
  *      Author: Ludo
  */
 
-#ifndef __RTC_H__
-#define __RTC_H__
-
 #ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_drivers_flags.h"
 #endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
+#ifndef __RTC_H__
+#define __RTC_H__
+
 #include "error.h"
 #include "nvic.h"
 #include "rcc.h"
@@ -200,3 +203,5 @@ RTC_status_t RTC_get_time(RTC_time_t* time);
 #define RTC_stack_exit_error(base, code) { ERROR_check_stack_exit(rtc_status, RTC_SUCCESS, base, code) }
 
 #endif /* __RTC_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

@@ -5,6 +5,12 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __IWDG_H__
 #define __IWDG_H__
 
@@ -61,3 +67,5 @@ void IWDG_reload(void);
 #define IWDG_stack_exit_error(base, code) { ERROR_check_stack_exit(iwdg_status, IWDG_SUCCESS, base, code) }
 
 #endif /* __IWDG_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

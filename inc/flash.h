@@ -5,6 +5,12 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #ifndef __FLASH_H__
 #define __FLASH_H__
 
@@ -98,3 +104,5 @@ FLASH_status_t FLASH_erase_page(uint32_t page_index);
 #define FLASH_stack_exit_error(base, code) { ERROR_check_stack_exit(flash_status, FLASH_SUCCESS, base, code) }
 
 #endif /* __FLASH_H__ */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

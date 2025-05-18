@@ -5,13 +5,16 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #include "dma.h"
 
 #ifndef STM32G4XX_REGISTERS_DISABLE_FLAGS_FILE
 #include "stm32g4xx_registers_flags.h"
-#endif
-#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
-#include "stm32g4xx_drivers_flags.h"
 #endif
 #include "dma_registers.h"
 #include "dmamux_registers.h"
@@ -493,3 +496,5 @@ errors:
 }
 
 #endif /* STM32G4XX_DRIVERS_DMA_CHANNEL_MASK */
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */

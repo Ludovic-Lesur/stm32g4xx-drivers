@@ -5,6 +5,12 @@
  *      Author: Ludo
  */
 
+#ifndef STM32G4XX_DRIVERS_DISABLE_FLAGS_FILE
+#include "stm32g4xx_drivers_flags.h"
+#endif
+
+#ifndef STM32G4XX_DRIVERS_DISABLE
+
 #include "pwr.h"
 
 #include "nvic_registers.h"
@@ -139,3 +145,5 @@ uint8_t PWR_get_reset_flags(void) {
 void PWR_clear_reset_flags(void) {
     RCC->CSR |= (0b1 << 23);
 }
+
+#endif /* STM32G4XX_DRIVERS_DISABLE */
