@@ -192,7 +192,7 @@ LPUART_status_t LPUART_init(const LPUART_gpio_t* pins, LPUART_configuration_t* c
     status = _LPUART_set_baud_rate(configuration->baud_rate);
     if (status != LPUART_SUCCESS) goto errors;
     // Configure peripheral.
-    if ((configuration->rxne_callback) != NULL) {
+    if ((configuration->rxne_irq_callback) != NULL) {
         LPUART1->CR1 |= (0b1 << 5); // RXNEIE='1'.
     }
     else {
@@ -220,7 +220,7 @@ LPUART_status_t LPUART_init(const LPUART_gpio_t* pins, LPUART_configuration_t* c
     // Enable peripheral.
     LPUART1->CR1 |= (0b11 << 0); // UE='1' and UESM='1'
     // Register callback.
-    lpuart_ctx.rxne_callback = (configuration->rxne_callback);
+    lpuart_ctx.rxne_callback = (configuration->rxne_irq_callback);
     // Update initialization flag.
     lpuart_ctx.init_flag = 1;
 errors:

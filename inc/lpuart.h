@@ -76,7 +76,7 @@ typedef enum {
 typedef struct {
     uint32_t baud_rate;
     uint8_t nvic_priority;
-    LPUART_rx_irq_cb_t rxne_callback;
+    LPUART_rx_irq_cb_t rxne_irq_callback;
 #ifdef STM32G4XX_DRIVERS_LPUART_RS485
     LPUART_rs485_mode_t rs485_mode;
     uint8_t self_address;
