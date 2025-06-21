@@ -26,7 +26,7 @@
 
 /*** USART local macros ***/
 
-#define USART_TIMEOUT_COUNT         100000
+#define USART_TIMEOUT_COUNT         1000000
 
 #define USART_REGISTER_MASK_BRR     0x0000FFFF
 #define USART_REGISTER_MASK_TDR     0x000000FF
@@ -51,6 +51,9 @@ typedef struct {
     uint8_t init_flag;
     USART_rx_irq_cb_t rxne_irq_callback;
     USART_character_match_irq_cb_t cm_irq_callback;
+#ifdef STM32G4XX_DRIVERS_USART_RS485
+    USART_rs485_mode_t rs485_mode;
+#endif
 } USART_context_t;
 
 /*** USART local global variables ***/
@@ -69,7 +72,10 @@ static USART_context_t usart_ctx[USART_INSTANCE_LAST] = {
     [0 ... (USART_INSTANCE_LAST - 1)] = {
         .init_flag = 0,
         .rxne_irq_callback = NULL,
-        .cm_irq_callback = NULL
+        .cm_irq_callback = NULL,
+#ifdef STM32G4XX_DRIVERS_USART_RS485
+        .rs485_mode = USART_RS485_MODE_DISABLED
+#endif
     }
 };
 
@@ -109,7 +115,7 @@ void __attribute__((optimize("-O0"))) USART1_IRQHandler(void) {
     // Execute internal callback.
     _USART_irq_handler(USART_INSTANCE_USART1);
     // Clear EXTI line.
-    EXTI_clear_line_flag(EXTI_LINE_USART2);
+    EXTI_clear_line_flag(EXTI_LINE_USART1);
 }
 
 /*******************************************************************/
@@ -258,10 +264,16 @@ USART_status_t USART_init(USART_instance_t instance, const USART_gpio_t* pins, U
     }
     USART_DESCRIPTOR[instance].peripheral->CR3 |= (0b1 << 6); // DMAR='1'.
 #ifdef STM32G4XX_DRIVERS_USART_RS485
-    USART_DESCRIPTOR[instance].peripheral->CR2 |= ((configuration->self_address) << 24) | (0b1 << 4);
-    USART_DESCRIPTOR[instance].peripheral->CR3 |= 0x00004000;
-    status = _USART_set_rs485_mode(configuration->rs485_mode);
-    if (status != USART_SUCCESS) goto errors;
+    if (configuration->rs485_mode != USART_RS485_MODE_DISABLED) {
+        // Configure address.
+        USART_DESCRIPTOR[instance].peripheral->CR2 |= ((configuration->self_address) << 24) | (0b1 << 4);
+        USART_DESCRIPTOR[instance].peripheral->CR3 |= 0x00004000;
+        // Set mode.
+        status = _USART_set_rs485_mode(configuration->rs485_mode);
+        if (status != USART_SUCCESS) goto errors;
+        // Update instance context.
+        usart_ctx[instance].rs485_mode = (configuration->rs485_mode);
+    }
 #endif
     // Set interrupt priority.
     NVIC_set_priority(USART_DESCRIPTOR[instance].nvic_interrupt, (configuration->nvic_priority));
@@ -269,9 +281,11 @@ USART_status_t USART_init(USART_instance_t instance, const USART_gpio_t* pins, U
     GPIO_configure((pins->tx), GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
     GPIO_configure((pins->rx), GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 #ifdef STM32G4XX_DRIVERS_USART_RS485
-    // Put NRE pin in high impedance since it is directly connected to the DE pin.
-    GPIO_configure((pins->de), GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-    GPIO_configure((pins->nre), GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+    if (usart_ctx[instance].rs485_mode != USART_RS485_MODE_DISABLED) {
+        // Put NRE pin in high impedance since it is directly connected to the DE pin.
+        GPIO_configure((pins->de), GPIO_MODE_ALTERNATE_FUNCTION, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+        GPIO_configure((pins->nre), GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+    }
 #endif
     // Enable transmitter and receiver.
     USART_DESCRIPTOR[instance].peripheral->CR1 |= (0b11 << 2); // TE='1' and RE='1'.
@@ -309,9 +323,11 @@ USART_status_t USART_de_init(USART_instance_t instance, const USART_gpio_t* pins
     GPIO_configure((pins->tx), GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
     GPIO_configure((pins->rx), GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
 #ifdef STM32G4XX_DRIVERS_USART_RS485
-    // Put NRE pin in high impedance since it is directly connected to the DE pin.
-    GPIO_configure((pins->de), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
-    GPIO_configure((pins->nre), GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+    if (usart_ctx[instance].rs485_mode != USART_RS485_MODE_DISABLED) {
+        // Put NRE pin in high impedance since it is directly connected to the DE pin.
+        GPIO_configure((pins->de), GPIO_MODE_OUTPUT, GPIO_TYPE_PUSH_PULL, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+        GPIO_configure((pins->nre), GPIO_MODE_ANALOG, GPIO_TYPE_OPEN_DRAIN, GPIO_SPEED_LOW, GPIO_PULL_NONE);
+    }
 #endif
     // Disable peripheral.
     USART_DESCRIPTOR[instance].peripheral->CR1 &= ~(0b1 << 0); // UE='0'.
@@ -319,6 +335,9 @@ USART_status_t USART_de_init(USART_instance_t instance, const USART_gpio_t* pins
     (*USART_DESCRIPTOR[instance].rcc_enr) &= ~(USART_DESCRIPTOR[instance].rcc_mask);
     // Update initialization flag.
     usart_ctx[instance].init_flag = 0;
+#ifdef STM32G4XX_DRIVERS_USART_RS485
+    usart_ctx[instance].rs485_mode = USART_RS485_MODE_DISABLED;
+#endif
 errors:
     return status;
 }
@@ -345,9 +364,9 @@ USART_status_t USART_enable_rx(USART_instance_t instance) {
     NVIC_enable_interrupt(USART_DESCRIPTOR[instance].nvic_interrupt);
     // Enable receiver.
     USART_DESCRIPTOR[instance].peripheral->CR1 |= (0b1 << 2); // RE='1'.
-#ifdef STM32G4XX_DRIVERS_LPUART_RS485
+#ifdef STM32G4XX_DRIVERS_USART_RS485
     // Check mode.
-    if (((USART_DESCRIPTOR[instance].peripheral->CR1) & (0b1 << 13)) != 0) {
+    if ((((USART_DESCRIPTOR[instance].peripheral->CR1) & (0b1 << 13)) != 0) && (usart_ctx[instance].rs485_mode != USART_RS485_MODE_DISABLED)) {
         // Mute mode request.
         USART_DESCRIPTOR[instance].peripheral->RQR |= (0b1 << 2); // MMRQ='1'.
     }
@@ -411,6 +430,7 @@ USART_status_t USART_write(USART_instance_t instance, uint8_t* data, uint32_t da
         reg_value |= (uint32_t) (data[idx] & USART_REGISTER_MASK_TDR);
         USART_DESCRIPTOR[instance].peripheral->TDR = reg_value;
         // Wait for transmission to complete.
+        loop_count = 0;
         while (((USART_DESCRIPTOR[instance].peripheral->ISR) & (0b1 << 7)) == 0) {
             // Wait for TXE='1' or timeout.
             loop_count++;
@@ -420,14 +440,16 @@ USART_status_t USART_write(USART_instance_t instance, uint8_t* data, uint32_t da
             }
         }
     }
-#ifdef STM32G4XX_DRIVERS_LPUART_RS485
-    // Wait for TC flag.
-    while (((USART_DESCRIPTOR[instance].peripheral->ISR) & (0b1 << 6)) == 0) {
-        // Exit if timeout.
-        loop_count++;
-        if (loop_count > USART_TIMEOUT_COUNT) {
-            status = USART_ERROR_TC_TIMEOUT;
-            goto errors;
+#ifdef STM32G4XX_DRIVERS_USART_RS485
+    if (usart_ctx[instance].rs485_mode != USART_RS485_MODE_DISABLED) {
+        // Wait for TC flag.
+        while (((USART_DESCRIPTOR[instance].peripheral->ISR) & (0b1 << 6)) == 0) {
+            // Exit if timeout.
+            loop_count++;
+            if (loop_count > USART_TIMEOUT_COUNT) {
+                status = USART_ERROR_TC_TIMEOUT;
+                goto errors;
+            }
         }
     }
 #endif
