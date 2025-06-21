@@ -405,28 +405,35 @@ static ADC_status_t _ADC_init(ADC_instance_t instance, ADC_mode_t mode, ADC_cloc
         status = ADC_ERROR_CLOCK_PRESCALER;
         goto errors;
     }
-    // Do not allow tightly coupled ADC to be independent at the same time.
+    // Do not reconfigure clock and do not reset peripheral if a tightly coupled ADC is already initialized in independent mode.
     if ((mode == ADC_MODE_INDEPENDENT_SINGLE) || (mode == ADC_MODE_INDEPENDENT_SEQUENCE)) {
         // Check instance.
         switch (instance) {
         case ADC_INSTANCE_ADC1:
-            _ADC_check_mode(ADC_INSTANCE_ADC2, ADC_MODE_NONE);
+            if (adc_ctx[ADC_INSTANCE_ADC2].mode != ADC_MODE_NONE) {
+                common_settings_update_flag = 0;
+            }
             break;
         case ADC_INSTANCE_ADC2:
-            _ADC_check_mode(ADC_INSTANCE_ADC1, ADC_MODE_NONE);
+            if (adc_ctx[ADC_INSTANCE_ADC1].mode != ADC_MODE_NONE) {
+                common_settings_update_flag = 0;
+            }
             break;
 #if (STM32G4XX_REGISTERS_MCU_CATEGORY == 3)
         case ADC_INSTANCE_ADC3:
-            _ADC_check_mode(ADC_INSTANCE_ADC4, ADC_MODE_NONE);
-            _ADC_check_mode(ADC_INSTANCE_ADC5, ADC_MODE_NONE);
+            if ((adc_ctx[ADC_INSTANCE_ADC4].mode != ADC_MODE_NONE) || (adc_ctx[ADC_INSTANCE_ADC5].mode != ADC_MODE_NONE)) {
+                common_settings_update_flag = 0;
+            }
             break;
         case ADC_INSTANCE_ADC4:
-            _ADC_check_mode(ADC_INSTANCE_ADC3, ADC_MODE_NONE);
-            _ADC_check_mode(ADC_INSTANCE_ADC5, ADC_MODE_NONE);
+            if ((adc_ctx[ADC_INSTANCE_ADC3].mode != ADC_MODE_NONE) || (adc_ctx[ADC_INSTANCE_ADC5].mode != ADC_MODE_NONE)) {
+                common_settings_update_flag = 0;
+            }
             break;
         case ADC_INSTANCE_ADC5:
-            _ADC_check_mode(ADC_INSTANCE_ADC3, ADC_MODE_NONE);
-            _ADC_check_mode(ADC_INSTANCE_ADC4, ADC_MODE_NONE);
+            if ((adc_ctx[ADC_INSTANCE_ADC3].mode != ADC_MODE_NONE) || (adc_ctx[ADC_INSTANCE_ADC4].mode != ADC_MODE_NONE)) {
+                common_settings_update_flag = 0;
+            }
             break;
 #endif
         default:
@@ -500,24 +507,30 @@ static ADC_status_t _ADC_init(ADC_instance_t instance, ADC_mode_t mode, ADC_cloc
     // Specific settings for each mode.
     switch (mode) {
     case ADC_MODE_INDEPENDENT_SINGLE:
-        // ADC mode.
-        ADC_DESCRIPTOR[instance].common_peripheral->CCR &= ~(0b11111 << 0);
+        if (common_settings_update_flag != 0) {
+            // ADC mode.
+            ADC_DESCRIPTOR[instance].common_peripheral->CCR &= ~(0b11111 << 0);
+        }
         break;
     case ADC_MODE_INDEPENDENT_SEQUENCE:
-        // ADC mode.
-        ADC_DESCRIPTOR[instance].common_peripheral->CCR &= ~(0b11111 << 0);
+        if (common_settings_update_flag != 0) {
+            // ADC mode.
+            ADC_DESCRIPTOR[instance].common_peripheral->CCR &= ~(0b11111 << 0);
+        }
         // Enable circular DMA.
         ADC_DESCRIPTOR[instance].peripheral->CFGR |= (0b11 << 0);
         break;
     case ADC_MODE_DUAL_SEQUENCE:
         // Enable circular DMA.
         ADC_DESCRIPTOR[instance].peripheral->CFGR |= (0b11 << 0);
-        // ADC mode.
-        ADC_DESCRIPTOR[instance].common_peripheral->CCR &= ~(0b11111 << 0);
-        ADC_DESCRIPTOR[instance].common_peripheral->CCR |= (0b00110 << 0);
-        // Use independent circular DMA channel for each ADC.
-        ADC_DESCRIPTOR[instance].common_peripheral->CCR &= ~(0b11 << 14);
-        ADC_DESCRIPTOR[instance].common_peripheral->CCR |= (0b1 << 13);
+        if (common_settings_update_flag != 0) {
+            // ADC mode.
+            ADC_DESCRIPTOR[instance].common_peripheral->CCR &= ~(0b11111 << 0);
+            ADC_DESCRIPTOR[instance].common_peripheral->CCR |= (0b00110 << 0);
+            // Use independent circular DMA channel for each ADC.
+            ADC_DESCRIPTOR[instance].common_peripheral->CCR &= ~(0b11 << 14);
+            ADC_DESCRIPTOR[instance].common_peripheral->CCR |= (0b1 << 13);
+        }
         break;
     default:
         status = ADC_ERROR_MODE;
@@ -687,13 +700,18 @@ static ADC_status_t _ADC_single_conversion(ADC_instance_t instance, uint8_t sqx,
     // Local variables.
     ADC_status_t status = ADC_SUCCESS;
     uint32_t loop_count = 0;
+    // Check SQX.
+    if (sqx == ADC_SQX_ERROR) {
+        status = ADC_ERROR_INTERNAL_CHANNEL;
+        goto errors;
+    }
     // Maximum sampling time.
     _ADC_set_sampling_time(instance, sqx, (ADC_SMPX_RANGE - 1));
     // Regular sequence definition.
     ADC_DESCRIPTOR[instance].peripheral->SQR1 &= (~ADC_REGISTER_MASK_SQR1);
     ADC_DESCRIPTOR[instance].peripheral->SQR1 |= (sqx << 6);
     // Clear conversion flags.
-    ADC_DESCRIPTOR[instance].peripheral->ISR |= (0b1111 << 1);
+    ADC_DESCRIPTOR[instance].peripheral->ISR = 0x0000001E;
     // Start conversion.
     status = _ADC_start(instance);
     if (status != ADC_SUCCESS) goto errors;
