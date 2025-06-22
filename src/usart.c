@@ -101,12 +101,12 @@ static void __attribute__((optimize("-O0"))) _USART_irq_handler(USART_instance_t
             usart_ctx[instance].cm_irq_callback();
         }
         // Clear CMF flag.
-        USART_DESCRIPTOR[instance].peripheral->ICR |= (0b1 << 17);
+        USART_DESCRIPTOR[instance].peripheral->ICR = (0b1 << 17);
     }
     // PE interrupt.
     if (((USART_DESCRIPTOR[instance].peripheral->ISR) & (0b1 << 0)) != 0) {
         // Clear PE flag.
-        USART_DESCRIPTOR[instance].peripheral->ICR |= (0b1 << 0);
+        USART_DESCRIPTOR[instance].peripheral->ICR = (0b1 << 0);
     }
 }
 

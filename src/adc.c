@@ -484,7 +484,7 @@ static ADC_status_t _ADC_init(ADC_instance_t instance, ADC_mode_t mode, ADC_cloc
     (*ADC_DESCRIPTOR[instance].rcc_enr) |= ADC_DESCRIPTOR[instance].rcc_mask;
     // Clear ready flag.
     if (((ADC_DESCRIPTOR[instance].peripheral->ISR) & (0b1 << 0)) != 0) {
-        ADC_DESCRIPTOR[instance].peripheral->ISR |= (0b1 << 0);
+        ADC_DESCRIPTOR[instance].peripheral->ISR = (0b1 << 0);
     }
     // Ensure ADC is disabled.
     status = _ADC_disable(instance);
@@ -711,7 +711,7 @@ static ADC_status_t _ADC_single_conversion(ADC_instance_t instance, uint8_t sqx,
     ADC_DESCRIPTOR[instance].peripheral->SQR1 &= (~ADC_REGISTER_MASK_SQR1);
     ADC_DESCRIPTOR[instance].peripheral->SQR1 |= (sqx << 6);
     // Clear conversion flags.
-    ADC_DESCRIPTOR[instance].peripheral->ISR = 0x0000001E;
+    ADC_DESCRIPTOR[instance].peripheral->ISR = (0b1111 << 1);
     // Start conversion.
     status = _ADC_start(instance);
     if (status != ADC_SUCCESS) goto errors;

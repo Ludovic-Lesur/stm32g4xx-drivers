@@ -72,7 +72,7 @@ void __attribute__((optimize("-O0"))) RTC_WKUP_IRQHandler(void) {
             }
         }
         // Clear RTC and EXTI flags.
-        RTC->SCR |= (0b1 << 2); // WUTF='0'.
+        RTC->SCR = (0b1 << 2); // WUTF='0'.
         EXTI_clear_line_flag(EXTI_LINE_RTC_WAKEUP_TIMER);
     }
 #if ((STM32G4XX_DRIVERS_RTC_ALARM_MASK & RTC_ALARM_MASK_A) != 0)
@@ -83,7 +83,7 @@ void __attribute__((optimize("-O0"))) RTC_WKUP_IRQHandler(void) {
             rtc_ctx.alarm_a_irq_callback();
         }
         // Clear RTC and EXTI flags.
-        RTC->SCR |= (0b1 << 0); // ALRAF='0'.
+        RTC->SCR = (0b1 << 0); // ALRAF='0'.
         EXTI_clear_line_flag(EXTI_LINE_RTC_ALARM);
     }
 #endif
@@ -95,7 +95,7 @@ void __attribute__((optimize("-O0"))) RTC_WKUP_IRQHandler(void) {
             rtc_ctx.alarm_b_irq_callback();
         }
         // Clear RTC and EXTI flags.
-        RTC->SCR |= (0b1 << 1); // ALRBF='0'.
+        RTC->SCR = (0b1 << 1); // ALRBF='0'.
         EXTI_clear_line_flag(EXTI_LINE_RTC_ALARM);
     }
 #endif
@@ -205,7 +205,7 @@ RTC_status_t RTC_init(RTC_irq_cb_t wakeup_timer_irq_callback, uint8_t nvic_prior
     reg_value |= (0x00004424 & RTC_REGISTER_MASK_CR);
     RTC->CR = reg_value;
     // Clear all flags.
-    RTC->SCR |= RTC_REGISTER_MASK_SCR;
+    RTC->SCR = RTC_REGISTER_MASK_SCR;
     // Enable interrupt.
     NVIC_enable_interrupt(NVIC_INTERRUPT_RTC_WKUP);
 errors:
@@ -265,7 +265,7 @@ RTC_status_t RTC_start_alarm(RTC_alarm_t alarm, RTC_alarm_configuration_t* confi
         // Configure alarm.
         RTC->ALRMAR = alrmxr;
         // Clear flag.
-        RTC->SCR |= (0b1 << 0);
+        RTC->SCR = (0b1 << 0);
         // Enable alarm A.
         EXTI_enable_line(EXTI_LINE_RTC_ALARM, EXTI_TRIGGER_RISING_EDGE);
         RTC->CR |= (0b1 << 12) | (0b1 << 8);
@@ -278,7 +278,7 @@ RTC_status_t RTC_start_alarm(RTC_alarm_t alarm, RTC_alarm_configuration_t* confi
         // Configure alarm.
         RTC->ALRMBR = alrmxr;
         // Clear flag.
-        RTC->SCR |= (0b1 << 1);
+        RTC->SCR = (0b1 << 1);
         // Enable alarm B.
         EXTI_enable_line(EXTI_LINE_RTC_ALARM, EXTI_TRIGGER_RISING_EDGE);
         RTC->CR |= (0b1 << 13) | (0b1 << 9);
@@ -309,7 +309,7 @@ RTC_status_t RTC_stop_alarm(RTC_alarm_t alarm) {
         // Stop alarm A.
         RTC->CR &= ~(0b1 << 12) & ~(0b1 << 8);
         // Clear flag.
-        RTC->SCR |= (0b1 << 0);
+        RTC->SCR = (0b1 << 0);
         break;
 #endif
 #if ((STM32G4XX_DRIVERS_RTC_ALARM_MASK & RTC_ALARM_MASK_B) != 0)
@@ -317,7 +317,7 @@ RTC_status_t RTC_stop_alarm(RTC_alarm_t alarm) {
         // Stop alarm A.
         RTC->CR &= ~(0b1 << 13) & ~(0b1 << 9);
         // Clear flag.
-        RTC->SCR |= (0b1 << 1);
+        RTC->SCR = (0b1 << 1);
         break;
 #endif
     default:

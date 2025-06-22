@@ -93,7 +93,7 @@ static EXTI_context_t exti_ctx = {
             exti_ctx.gpio_ctx[pin].edge_irq_callback(); \
         } \
         /* Clear flag */ \
-        (EXTI->EXTIx[0]).PR |= (0b1 << pin); \
+        (EXTI->EXTIx[0]).PR = (0b1 << pin); \
     } \
 }
 
@@ -203,7 +203,7 @@ static void _EXTI_set_trigger(uint8_t register_index, uint8_t line_index, EXTI_t
         goto errors;
     }
     // Clear flag.
-    (EXTI->EXTIx[register_index]).PR |= (0b1 << line_index);
+    (EXTI->EXTIx[register_index]).PR = (0b1 << line_index);
 errors:
     return;
 }
@@ -220,15 +220,15 @@ void EXTI_init(void) {
     (EXTI->EXTIx[1]).IMR &= (~EXTI_REGISTER_MASK_IMR2_EMR2);
     (EXTI->EXTIx[1]).EMR &= (~EXTI_REGISTER_MASK_IMR2_EMR2);
     // Clear all flags.
-    (EXTI->EXTIx[0]).PR |= EXTI_REGISTER_MASK_PR1;
-    (EXTI->EXTIx[1]).PR |= EXTI_REGISTER_MASK_PR2;
+    (EXTI->EXTIx[0]).PR = EXTI_REGISTER_MASK_PR1;
+    (EXTI->EXTIx[1]).PR = EXTI_REGISTER_MASK_PR2;
 }
 
 /*******************************************************************/
 void EXTI_de_init(void) {
     // Clear all flags.
-    (EXTI->EXTIx[0]).PR |= EXTI_REGISTER_MASK_PR1;
-    (EXTI->EXTIx[1]).PR |= EXTI_REGISTER_MASK_PR2;
+    (EXTI->EXTIx[0]).PR = EXTI_REGISTER_MASK_PR1;
+    (EXTI->EXTIx[1]).PR = EXTI_REGISTER_MASK_PR2;
     // Mask all sources.
     (EXTI->EXTIx[0]).IMR &= (~EXTI_REGISTER_MASK_IMR1_EMR1);
     (EXTI->EXTIx[0]).EMR &= (~EXTI_REGISTER_MASK_IMR1_EMR1);
@@ -264,7 +264,7 @@ void EXTI_clear_line_flag(EXTI_line_t line) {
     uint8_t register_idx = (line >> 5);
     uint8_t line_idx = (line % 32);
     // Clear flag.
-    (EXTI->EXTIx[register_idx]).PR |= (0b1 << line_idx);
+    (EXTI->EXTIx[register_idx]).PR = (0b1 << line_idx);
 }
 
 #if ((STM32G4XX_DRIVERS_EXTI_GPIO_MASK & EXTI_GPIO_MASK_ALL) != 0)
@@ -334,7 +334,7 @@ void EXTI_clear_gpio_flag(const GPIO_pin_t* gpio) {
     // Local variables.
     uint8_t line_idx = (gpio->pin);
     // Clear flag.
-    (EXTI->EXTIx[0]).PR |= (0b1 << line_idx);
+    (EXTI->EXTIx[0]).PR = (0b1 << line_idx);
 }
 #endif
 

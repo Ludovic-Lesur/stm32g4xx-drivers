@@ -65,7 +65,7 @@ static FLASH_status_t _FLASH_check_busy(FLASH_status_t timeout_error_code) {
     }
 errors:
     // Clear all flags.
-    FLASH->SR |= 0x0000C3FB;
+    FLASH->SR = 0x0000C3FB;
     return status;
 }
 

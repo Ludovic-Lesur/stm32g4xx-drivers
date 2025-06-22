@@ -139,7 +139,7 @@ static DMA_global_context_t dma_global_ctx = {
             dma_ctx[instance].channel_ctx[channel].tc_irq_callback(); \
         } \
         /* Clear flags */ \
-        DMA_DESCRIPTOR[instance].peripheral->IFCR |= (0b1111 << (channel << 2)); \
+        DMA_DESCRIPTOR[instance].peripheral->IFCR = (0b1111 << (channel << 2)); \
     } \
 }
 
@@ -408,7 +408,7 @@ DMA_status_t DMA_start(DMA_instance_t instance, DMA_channel_t channel) {
     _DMA_check_channel(channel);
     _DMA_check_channel_state(instance, channel);
     // Clear all flags.
-    DMA_DESCRIPTOR[instance].peripheral->IFCR |= (0b1111 << (channel << 2));
+    DMA_DESCRIPTOR[instance].peripheral->IFCR = (0b1111 << (channel << 2));
     // Enable interrupt.
     NVIC_enable_interrupt(DMA_DESCRIPTOR[instance].nvic_interrupt[channel]);
     // Start transfer.
@@ -430,7 +430,7 @@ DMA_status_t DMA_stop(DMA_instance_t instance, DMA_channel_t channel) {
     // Disable interrupt.
     NVIC_disable_interrupt(DMA_DESCRIPTOR[instance].nvic_interrupt[channel]);
     // Clear all flags.
-    DMA_DESCRIPTOR[instance].peripheral->IFCR |= (0b1111 << (channel << 2));
+    DMA_DESCRIPTOR[instance].peripheral->IFCR = (0b1111 << (channel << 2));
 errors:
     return status;
 }
