@@ -76,6 +76,8 @@ void PWR_init(void) {
     _PWR_reset_backup_domain();
     // Never return in low power sleep mode after wake-up.
     SCB->SCR &= ~(0b1 << 1); // SLEEPONEXIT='0'.
+    // Disable UCPD pull-down resistors.
+    PWR->CR3 |= (0b1 << 14);
 }
 
 /*******************************************************************/
