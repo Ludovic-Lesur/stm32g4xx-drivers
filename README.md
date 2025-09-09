@@ -14,6 +14,7 @@ Here is the versions compatibility table:
 
 | **stm32g4xx-drivers** | **stm32g4xx-device** | **stm32g4xx-registers** | **embedded-utils** |
 |:---:|:---:|:---:|:---:|
+| [sw3.3](https://github.com/Ludovic-Lesur/stm32g4xx-drivers/releases/tag/sw3.3) | >= [sw2.0](https://github.com/Ludovic-Lesur/stm32g4xx-device/releases/tag/sw2.0) | >= [sw1.1](https://github.com/Ludovic-Lesur/stm32g4xx-registers/releases/tag/sw1.1) | >= [sw7.0](https://github.com/Ludovic-Lesur/embedded-utils/releases/tag/sw7.0) |
 | [sw3.2](https://github.com/Ludovic-Lesur/stm32g4xx-drivers/releases/tag/sw3.2) | >= [sw2.0](https://github.com/Ludovic-Lesur/stm32g4xx-device/releases/tag/sw2.0) | >= [sw1.1](https://github.com/Ludovic-Lesur/stm32g4xx-registers/releases/tag/sw1.1) | >= [sw7.0](https://github.com/Ludovic-Lesur/embedded-utils/releases/tag/sw7.0) |
 | [sw3.1](https://github.com/Ludovic-Lesur/stm32g4xx-drivers/releases/tag/sw3.1) | >= [sw2.0](https://github.com/Ludovic-Lesur/stm32g4xx-device/releases/tag/sw2.0) | >= [sw1.1](https://github.com/Ludovic-Lesur/stm32g4xx-registers/releases/tag/sw1.1) | >= [sw7.0](https://github.com/Ludovic-Lesur/embedded-utils/releases/tag/sw7.0) |
 | [sw3.0](https://github.com/Ludovic-Lesur/stm32g4xx-drivers/releases/tag/sw3.0) | >= [sw2.0](https://github.com/Ludovic-Lesur/stm32g4xx-device/releases/tag/sw2.0) | >= [sw1.1](https://github.com/Ludovic-Lesur/stm32g4xx-registers/releases/tag/sw1.1) | >= [sw7.0](https://github.com/Ludovic-Lesur/embedded-utils/releases/tag/sw7.0) |
