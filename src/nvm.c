@@ -45,11 +45,11 @@ typedef enum {
 
 /*******************************************************************/
 typedef union {
-    struct {
-        uint32_t virtual_address : 32;
-        uint32_t value : 32;
-    } __attribute__((scalar_storage_order("big-endian")))__attribute__((packed)) field;
     uint64_t double_word;
+    struct {
+        uint32_t virtual_address :32;
+        uint32_t value :32;
+    } __attribute__((scalar_storage_order("big-endian"))) __attribute__((packed));
 } NVM_record_t;
 
 /*******************************************************************/
@@ -87,7 +87,7 @@ static NVM_status_t _NVM_update_memory_status(uint32_t* free_absolute_address) {
         flash_status = FLASH_read_double_word(absolute_address, &(nvm_record.double_word));
         FLASH_exit_error(NVM_ERROR_BASE_FLASH);
         // Check if address is free.
-        if (nvm_record.field.virtual_address == NVM_WORD_BLANK) {
+        if (nvm_record.virtual_address == NVM_WORD_BLANK) {
             // Save address.
             (*free_absolute_address) = absolute_address;
             // Update status.
@@ -114,7 +114,7 @@ static NVM_status_t _NVM_search_last_record(uint32_t address, uint8_t* record_fo
         flash_status = FLASH_read_double_word((NVM_PAGE_ADDRESS + (idx * FLASH_WORD_SIZE_BYTES)), &(local_nvm_record.double_word));
         FLASH_exit_error(NVM_ERROR_BASE_FLASH);
         // Check address match.
-        if (local_nvm_record.field.virtual_address == address) {
+        if (local_nvm_record.virtual_address == address) {
             // Update flag.
             (*record_found) = 1;
             // Update output value.
@@ -162,7 +162,7 @@ NVM_status_t NVM_read_word(uint32_t address, uint32_t* data) {
     if (status != NVM_SUCCESS) goto errors;
     // Check flag.
     if (record_found != 0) {
-        (*data) = ((uint32_t) nvm_record.field.value);
+        (*data) = ((uint32_t) nvm_record.value);
     }
 errors:
     return status;
@@ -184,8 +184,8 @@ NVM_status_t NVM_write_word(uint32_t address, uint32_t data) {
         goto errors;
     }
     // Build word to record.
-    new_nvm_record.field.virtual_address = address;
-    new_nvm_record.field.value = data;
+    new_nvm_record.virtual_address = address;
+    new_nvm_record.value = data;
     // Search free address.
     status = _NVM_update_memory_status(&free_absolute_address);
     if (status != NVM_SUCCESS) goto errors;
@@ -204,8 +204,8 @@ NVM_status_t NVM_write_word(uint32_t address, uint32_t data) {
             // Check word.
             if (data_word != NVM_WORD_BLANK) {
                 // Store in RAM backup.
-                nvm_backup[backup_size].field.virtual_address = idx;
-                nvm_backup[backup_size].field.value = (idx == address) ? data : data_word;
+                nvm_backup[backup_size].virtual_address = idx;
+                nvm_backup[backup_size].value = (idx == address) ? data : data_word;
                 backup_size++;
             }
         }
@@ -217,7 +217,7 @@ NVM_status_t NVM_write_word(uint32_t address, uint32_t data) {
         // Restore backup and new value.
         for (idx = 0; idx < backup_size; idx++) {
             // Write byte.
-            status = NVM_write_word(nvm_backup[idx].field.virtual_address, nvm_backup[idx].field.value);
+            status = NVM_write_word(nvm_backup[idx].virtual_address, nvm_backup[idx].value);
             if (status != NVM_SUCCESS) goto errors;
         }
     }
