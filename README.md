@@ -6,6 +6,7 @@ This repository contains the **peripherals drivers** of the STM32G4xx MCUs.
 
 The drivers rely on:
 
+* An external `types.h` header file defining the **standard C types** of the targeted MCU.
 * The **STM32G4xx linker scripts** defined in the [stm32g4xx-device](https://github.com/Ludovic-Lesur/stm32g4xx-device) repository.
 * The **STM32G4xx registers** defined in the [stm32g4xx-registers](https://github.com/Ludovic-Lesur/stm32g4xx-registers) repository.
 * The **embedded utility functions** defined in the [embedded-utils](https://github.com/Ludovic-Lesur/embedded-utils) repository.
@@ -48,3 +49,34 @@ Here is the versions compatibility table:
 | `STM32G4XX_DRIVERS_TIM_MODE_MASK` | `0x00` to `0x3F`| 6-bits field which defines the enabled timer operation modes: `0` = standard `1` = multi-channel `2` = calibration `3` = PWM `4` = one pulse `5` = capture. |
 | `STM32G4XX_DRIVERS_USART_RS485` | `defined` / `undefined` | Enable or disable RS485 operation. |
 | `STM32G4XX_DRIVERS_USART_DISABLE_TX_0` | `defined` / `undefined` | Disable the transmission of byte 0x00 if defined. |
+
+# Build
+
+A static library can be compiled by command line with `cmake`.
+
+```bash
+mkdir build
+cd build
+cmake -DCMAKE_TOOLCHAIN_FILE="<toolchain_file_path>" \
+      -DTOOLCHAIN_PATH="<arm-none-eabi-gcc_path>" \
+      -DTYPES_PATH="<types_file_path>" \
+      -DSTM32G4XX_REGISTERS_PATH="<stm32g4xx-registers_path>" \
+      -DEMBEDDED_UTILS_PATH="<embedded-utils_path>" \
+      -DSTM32G4XX_DRIVERS_ADC_MODE_MASK=0x03 \
+      -DSTM32G4XX_DRIVERS_ADC_VREF_MV=2500 \
+      -DSTM32G4XX_DRIVERS_DMA_CHANNEL_MASK=0xFFFF \
+      -DSTM32G4XX_DRIVERS_EXTI_GPIO_MASK=0xFFFF \
+      -DSTM32G4XX_DRIVERS_LPUART_RS485=OFF \
+      -DSTM32G4XX_DRIVERS_LPUART_DISABLE_TX_0=ON \
+      -DSTM32G4XX_DRIVERS_RCC_HSE_ENABLE=OFF \
+      -DSTM32G4XX_DRIVERS_RCC_HSE_FREQUENCY_HZ=16000000 \
+      -DSTM32G4XX_DRIVERS_RCC_LSE_MODE=1 \
+      -DSTM32G4XX_DRIVERS_RCC_LSE_FREQUENCY_HZ=32768 \
+      -DSTM32G4XX_DRIVERS_RTC_WAKEUP_PERIOD_SECONDS=10 \
+      -DSTM32G4XX_DRIVERS_RTC_ALARM_MASK=0x03 \
+      -DSTM32G4XX_DRIVERS_TIM_MODE_MASK=0x1F \
+      -DSTM32G4XX_DRIVERS_USART_RS485=OFF \
+      -DSTM32G4XX_DRIVERS_USART_DISABLE_TX_0=ON \
+      -G "Unix Makefiles" ..
+make all
+```
