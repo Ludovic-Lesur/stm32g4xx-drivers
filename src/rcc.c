@@ -420,6 +420,7 @@ RCC_status_t RCC_switch_to_pll(RCC_pll_configuration_t* pll_configuration) {
         RCC->CR |= (0b1 << 8); // HSI16ON='1'.
         pllsrc = 0b10;
         break;
+#ifdef STM32G4XX_DRIVERS_RCC_HSE_ENABLE
     case RCC_CLOCK_HSE:
         // Set mode.
         if ((pll_configuration->hse_mode) == RCC_HSE_MODE_BYPASS) {
@@ -428,6 +429,7 @@ RCC_status_t RCC_switch_to_pll(RCC_pll_configuration_t* pll_configuration) {
         // Enable HSE.
         RCC->CR |= (0b1 << 16); // HSEON='1'.
         pllsrc = 0b11;
+#endif
         break;
     default:
         status = RCC_ERROR_PLL_CLOCK_SOURCE;
