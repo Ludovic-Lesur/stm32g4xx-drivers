@@ -1020,31 +1020,37 @@ int32_t ADC_get_vrefint_voltage_mv(void) {
 }
 
 /*******************************************************************/
-uint32_t ADC_get_master_dr_register_address(ADC_instance_t instance) {
+ADC_status_t ADC_get_master_dr_register_address(ADC_instance_t instance, uint32_t* dr_register_address) {
     // Local variables.
     ADC_status_t status = ADC_SUCCESS;
-    uint32_t master_dr_address = 0;
     // Check instance.
     _ADC_check_instance(instance);
+    // Check parameter.
+    if (dr_register_address == NULL) {
+        status = ADC_ERROR_NULL_PARAMETER;
+        goto errors;
+    }
     // Update address.
-    master_dr_address = ((uint32_t) &(ADC_DESCRIPTOR[instance].peripheral->DR));
+    (*dr_register_address) = ((uint32_t) &(ADC_DESCRIPTOR[instance].peripheral->DR));
 errors:
-    UNUSED(status);
-    return master_dr_address;
+    return status;
 }
 /*******************************************************************/
-uint32_t ADC_get_slave_dr_register_address(ADC_instance_t instance) {
+ADC_status_t ADC_get_slave_dr_register_address(ADC_instance_t instance, uint32_t* dr_register_address) {
     // Local variables.
     ADC_status_t status = ADC_SUCCESS;
-    uint32_t slave_dr_address = 0;
     // Check instance.
     _ADC_check_instance(instance);
     _ADC_check_instance(ADC_DESCRIPTOR[instance].slave_instance);
+    // Check parameter.
+    if (dr_register_address == NULL) {
+        status = ADC_ERROR_NULL_PARAMETER;
+        goto errors;
+    }
     // Update address.
-    slave_dr_address = ((uint32_t) &(ADC_DESCRIPTOR[ADC_DESCRIPTOR[instance].slave_instance].peripheral->DR));
+    (*dr_register_address) = ((uint32_t) &(ADC_DESCRIPTOR[ADC_DESCRIPTOR[instance].slave_instance].peripheral->DR));
 errors:
-    UNUSED(status);
-    return slave_dr_address;
+    return status;
 }
 
 #endif /* STM32G4XX_DRIVERS_DISABLE */

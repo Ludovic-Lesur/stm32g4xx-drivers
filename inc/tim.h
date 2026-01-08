@@ -476,14 +476,14 @@ TIM_status_t TIM_IC_stop_channel(TIM_instance_t instance, TIM_channel_t channel)
 #endif
 
 /*!******************************************************************
- * \fn uint32_t TIM_get_ccr_register_address(TIM_instance_t instance, TIM_channel_t channel)
+ * \fn TIM_status_t TIM_get_ccr_register_address(TIM_instance_t instance, TIM_channel_t channel, uint32_t* ccr_register_address)
  * \brief Get TIM CCRx register address.
  * \param[in]   instance: Timer instance to read.
  * \param[in]   channel: Channel to read.
- * \param[out]  none
- * \retval      CCRx register address.
+ * \param[out]  ccr_register_address: Pointer to integer that will contain the TIM CCR register address.
+ * \retval      Function execution status.
  *******************************************************************/
-uint32_t TIM_get_ccr_register_address(TIM_instance_t instance, TIM_channel_t channel);
+TIM_status_t TIM_get_ccr_register_address(TIM_instance_t instance, TIM_channel_t channel, uint32_t* ccr_register_address);
 
 /*******************************************************************/
 #define TIM_exit_error(base) { ERROR_check_exit(tim_status, TIM_SUCCESS, base) }
