@@ -48,6 +48,7 @@ typedef struct {
 
 /*******************************************************************/
 typedef struct {
+    uint32_t clock_hz;
     uint8_t init_flag;
     USART_rx_irq_cb_t rxne_irq_callback;
     USART_character_match_irq_cb_t cm_irq_callback;
@@ -184,7 +185,6 @@ errors:
 USART_status_t USART_init(USART_instance_t instance, const USART_gpio_t* pins, USART_configuration_t* configuration) {
     // Local variables.
     USART_status_t status = USART_SUCCESS;
-    uint32_t usart_clock_hz = 0;
     uint32_t brr = 0;
     uint32_t reg_value = 0;
     // Check instance.
@@ -219,14 +219,14 @@ USART_status_t USART_init(USART_instance_t instance, const USART_gpio_t* pins, U
         goto errors;
     }
     // Get clock source frequency.
-    RCC_get_frequency_hz((configuration->clock), &usart_clock_hz);
+    RCC_get_frequency_hz((configuration->clock), &(usart_ctx[instance].clock_hz));
     // Enable peripheral clock.
     (*USART_DESCRIPTOR[instance].rcc_enr) |= USART_DESCRIPTOR[instance].rcc_mask;
     (*USART_DESCRIPTOR[instance].rcc_smenr) |= USART_DESCRIPTOR[instance].rcc_mask;
     // Disable overrun detection (OVRDIS='1').
     USART_DESCRIPTOR[instance].peripheral->CR3 |= (0b1 << 12);
     // Baud rate.
-    brr = ((usart_clock_hz) / (configuration->baud_rate));
+    brr = ((usart_ctx[instance].clock_hz) / (configuration->baud_rate));
     // Check value.
     if ((brr < USART_BRR_VALUE_MIN) || (brr > USART_BRR_VALUE_MAX)) {
         status = USART_ERROR_BAUD_RATE;
@@ -235,6 +235,32 @@ USART_status_t USART_init(USART_instance_t instance, const USART_gpio_t* pins, U
     reg_value = ((USART_DESCRIPTOR[instance].peripheral->BRR) & (~USART_REGISTER_MASK_BRR));
     reg_value |= (brr & USART_REGISTER_MASK_BRR);
     USART_DESCRIPTOR[instance].peripheral->BRR = reg_value;
+    // Auto baud rate default state.
+    USART_DESCRIPTOR[instance].peripheral->CR2 &= ~(0b11 << 21);
+    USART_DESCRIPTOR[instance].peripheral->CR2 &= ~(0b1 << 20);
+    // Auto baud rate settings.
+    switch (configuration->auto_baud_rate_mode) {
+    case USART_AUTO_BAUD_RATE_MODE_DISABLED:
+        break;
+    case USART_AUTO_BAUD_RATE_MODE_LSB_1:
+        USART_DESCRIPTOR[instance].peripheral->CR2 |= (0b1 << 20);
+        break;
+    case USART_AUTO_BAUD_RATE_MODE_PATTERN_10:
+        USART_DESCRIPTOR[instance].peripheral->CR2 |= (0b01 << 21);
+        USART_DESCRIPTOR[instance].peripheral->CR2 |= (0b1 << 20);
+        break;
+    case USART_AUTO_BAUD_RATE_MODE_FRAME_7F:
+        USART_DESCRIPTOR[instance].peripheral->CR2 |= (0b10 << 21);
+        USART_DESCRIPTOR[instance].peripheral->CR2 |= (0b1 << 20);
+        break;
+    case USART_AUTO_BAUD_RATE_MODE_FRAME_55:
+        USART_DESCRIPTOR[instance].peripheral->CR2 |= (0b11 << 21);
+        USART_DESCRIPTOR[instance].peripheral->CR2 |= (0b1 << 20);
+        break;
+    default:
+        status = USART_ERROR_AUTO_BAUD_RATE_MODE;
+        goto errors;
+    }
     // Configure peripheral.
     if (configuration->rxne_irq_callback != NULL) {
         USART_DESCRIPTOR[instance].peripheral->CR1 |= (0b1 << 5); // RXNEIE='1'.
@@ -453,6 +479,39 @@ USART_status_t USART_write(USART_instance_t instance, uint8_t* data, uint32_t da
         }
     }
 #endif
+errors:
+    return status;
+}
+
+/*******************************************************************/
+USART_status_t USART_get_baud_rate(USART_instance_t instance, uint32_t* baud_rate) {
+    // Local variables.
+    USART_status_t status = USART_SUCCESS;
+    // Check instance.
+    if (instance >= USART_INSTANCE_LAST) {
+        status = USART_ERROR_INSTANCE;
+        goto errors;
+    }
+    if (baud_rate == NULL) {
+        status = USART_ERROR_NULL_PARAMETER;
+        goto errors;
+    }
+    // Compute baud rate.
+    (*baud_rate) = ((usart_ctx[instance].clock_hz) / (USART_DESCRIPTOR[instance].peripheral->BRR));
+errors:
+    return status;
+}
+
+/*******************************************************************/
+USART_status_t USART_auto_baud_rate_request(USART_instance_t instance) {
+    // Local variables.
+    USART_status_t status = USART_SUCCESS;
+    // Check instance.
+    if (instance >= USART_INSTANCE_LAST) {
+        status = USART_ERROR_INSTANCE;
+        goto errors;
+    }
+    USART_DESCRIPTOR[instance].peripheral->RQR |= (0b1 << 0); // ABRRQ='1'.
 errors:
     return status;
 }

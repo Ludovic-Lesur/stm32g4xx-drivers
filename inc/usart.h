@@ -36,6 +36,7 @@ typedef enum {
     USART_ERROR_ALREADY_INITIALIZED,
     USART_ERROR_UNINITIALIZED,
     USART_ERROR_CLOCK,
+    USART_ERROR_AUTO_BAUD_RATE_MODE,
     USART_ERROR_PARITY,
     USART_ERROR_BAUD_RATE,
     USART_ERROR_TX_TIMEOUT,
@@ -86,6 +87,19 @@ typedef void (*USART_rx_irq_cb_t)(uint8_t data);
 typedef void (*USART_character_match_irq_cb_t)(void);
 
 /*!******************************************************************
+ * \enum USART_auto_baud_rate_mode_t
+ * \brief USART automatic baud rate detection modes.
+ *******************************************************************/
+typedef enum {
+    USART_AUTO_BAUD_RATE_MODE_DISABLED = 0,
+    USART_AUTO_BAUD_RATE_MODE_LSB_1,
+    USART_AUTO_BAUD_RATE_MODE_PATTERN_10,
+    USART_AUTO_BAUD_RATE_MODE_FRAME_7F,
+    USART_AUTO_BAUD_RATE_MODE_FRAME_55,
+    USART_AUTO_BAUD_RATE_MODE_LAST
+} USART_auto_baud_rate_mode_t;
+
+/*!******************************************************************
  * \enum USART_parity_t
  * \brief USART parities list.
  *******************************************************************/
@@ -116,6 +130,7 @@ typedef enum {
 typedef struct {
     RCC_clock_t clock;
     uint32_t baud_rate;
+    USART_auto_baud_rate_mode_t auto_baud_rate_mode;
     USART_parity_t parity;
     uint8_t nvic_priority;
     USART_rx_irq_cb_t rxne_irq_callback;
@@ -178,6 +193,24 @@ USART_status_t USART_disable_rx(USART_instance_t instance);
  * \retval      Function execution status.
  *******************************************************************/
 USART_status_t USART_write(USART_instance_t instance, uint8_t* data, uint32_t data_size_bytes);
+
+/*!******************************************************************
+ * \fn USART_status_t USART_get_baud_rate(USART_instance_t instance, uint32_t* baud_rate)
+ * \brief Get USART current baud rate.
+ * \param[in]   instance: USART instance to read.
+ * \param[out]  baud_rate: Pointer to integer that will contain the current baud rate.
+ * \retval      Function execution status.
+ *******************************************************************/
+USART_status_t USART_get_baud_rate(USART_instance_t instance, uint32_t* baud_rate);
+
+/*!******************************************************************
+ * \fn USART_status_t USART_auto_baud_rate_request(USART_instance_t instance)
+ * \brief Request automatic baud rate detection.
+ * \param[in]   instance: USART instance to use.
+ * \param[out]  none
+ * \retval      Function execution status.
+ *******************************************************************/
+USART_status_t USART_auto_baud_rate_request(USART_instance_t instance);
 
 /*!******************************************************************
  * \fn uint32_t USART_get_rdr_register_address(USART_instance_t instance)
