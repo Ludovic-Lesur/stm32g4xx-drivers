@@ -1035,6 +1035,7 @@ ADC_status_t ADC_get_master_dr_register_address(ADC_instance_t instance, uint32_
 errors:
     return status;
 }
+
 /*******************************************************************/
 ADC_status_t ADC_get_slave_dr_register_address(ADC_instance_t instance, uint32_t* dr_register_address) {
     // Local variables.
