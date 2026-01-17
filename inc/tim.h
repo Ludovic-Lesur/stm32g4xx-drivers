@@ -62,6 +62,7 @@ typedef enum {
     TIM_ERROR_FREQUENCY,
     TIM_ERROR_DUTY_CYCLE,
     TIM_ERROR_PULSE,
+    TIM_ERROR_DELAY,
     TIM_ERROR_SAMPLING_FREQUENCY_UNDERFLOW,
     TIM_ERROR_SAMPLING_FREQUENCY_OVERFLOW,
     TIM_ERROR_CAPTURE_PRESCALER,
@@ -401,17 +402,17 @@ TIM_status_t TIM_OPM_de_init(TIM_instance_t instance, TIM_gpio_t* pins);
 
 #if ((STM32G4XX_DRIVERS_TIM_MODE_MASK & TIM_MODE_MASK_OPM) != 0)
 /*!******************************************************************
- * \fn TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, uint32_t delay_ns, uint32_t pulse_duration_ns)
+ * \fn TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, uint32_t delay_us, uint32_t pulse_duration_us)
  * \brief Perform a single output pulse.
  * \param[in]   instance: Timer instance to use.
  * \param[in]   channels_mask: Channels to use.
- * \param[in]   delay_ns: Delay between function call and pulse start in ns. Warning: this setting will be applied to all channels of the timer instance.
- * \param[in]   pulse_duration_ns: Pulse duration in ns. Warning: this setting will be applied to all channels of the timer instance.
+ * \param[in]   delay_us: Delay between function call and pulse start in microsecond. Warning: this setting will be applied to all channels of the timer instance.
+ * \param[in]   pulse_duration_us: Pulse duration in microsecond. Warning: this setting will be applied to all channels of the timer instance.
  * \param[in]   internal_irq_enable: Enable or disable internal pulse completion interrupt (optionally used to wake-up the core at the end of the pulse).
  * \param[out]  none
  * \retval      Function execution status.
  *******************************************************************/
-TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, uint32_t delay_ns, uint32_t pulse_duration_ns, uint8_t internal_irq_enable);
+TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, uint32_t delay_us, uint32_t pulse_duration_us, uint8_t internal_irq_enable);
 #endif
 
 #if ((STM32G4XX_DRIVERS_TIM_MODE_MASK & TIM_MODE_MASK_OPM) != 0)

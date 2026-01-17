@@ -125,21 +125,21 @@ typedef struct {
 /*** TIM local global variables ***/
 
 static const TIM_descriptor_t TIM_DESCRIPTOR[TIM_INSTANCE_LAST] = {
-    { TIM1, MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB2RSTR), &(RCC->APB2SMENR), &(RCC->APB2ENR), (0b1 << 11), NVIC_INTERRUPT_LAST, NVIC_INTERRUPT_TIM1_CC },
-    { TIM2, MATH_U32_SIZE_BITS, 0xFFFFFFFF, 4, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 0), NVIC_INTERRUPT_TIM2, NVIC_INTERRUPT_TIM2 },
-    { TIM3, MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 1), NVIC_INTERRUPT_TIM3, NVIC_INTERRUPT_TIM3 },
-    { TIM4, MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 2), NVIC_INTERRUPT_TIM4, NVIC_INTERRUPT_TIM4 },
+    { TIM1,  MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB2RSTR),  &(RCC->APB2SMENR),  &(RCC->APB2ENR),  (0b1 << 11), NVIC_INTERRUPT_LAST, NVIC_INTERRUPT_TIM1_CC },
+    { TIM2,  MATH_U32_SIZE_BITS, 0xFFFFFFFF, 4, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 0),  NVIC_INTERRUPT_TIM2, NVIC_INTERRUPT_TIM2 },
+    { TIM3,  MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 1),  NVIC_INTERRUPT_TIM3, NVIC_INTERRUPT_TIM3 },
+    { TIM4,  MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 2),  NVIC_INTERRUPT_TIM4, NVIC_INTERRUPT_TIM4 },
 #if (STM32G4XX_REGISTERS_MCU_CATEGORY == 3)
-    { TIM5, MATH_U32_SIZE_BITS, 0xFFFFFFFF, 4, 2, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 3), NVIC_INTERRUPT_TIM5, NVIC_INTERRUPT_TIM5 },
+    { TIM5,  MATH_U32_SIZE_BITS, 0xFFFFFFFF, 4, 2, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 3),  NVIC_INTERRUPT_TIM5, NVIC_INTERRUPT_TIM5 },
 #endif
-    { TIM6, MATH_U16_SIZE_BITS, 0x0000FFFF, 0, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 4), NVIC_INTERRUPT_TIM6_DAC1_3, NVIC_INTERRUPT_TIM6_DAC1_3 },
-    { TIM7, MATH_U16_SIZE_BITS, 0x0000FFFF, 0, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 4), NVIC_INTERRUPT_TIM7_DAC2_4, NVIC_INTERRUPT_TIM7_DAC2_4 },
-    { TIM8, MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB2RSTR), &(RCC->APB2SMENR), &(RCC->APB2ENR), (0b1 << 13), NVIC_INTERRUPT_TIM8_UP, NVIC_INTERRUPT_TIM8_CC },
-    { TIM15, MATH_U16_SIZE_BITS, 0x0000FFFF, 2, 1, &(RCC->APB2RSTR), &(RCC->APB2SMENR), &(RCC->APB2ENR), (0b1 << 16), NVIC_INTERRUPT_TIM1_BRK_TIM15, NVIC_INTERRUPT_TIM1_BRK_TIM15 },
-    { TIM16, MATH_U16_SIZE_BITS, 0x0000FFFF, 1, 5, &(RCC->APB2RSTR), &(RCC->APB2SMENR), &(RCC->APB2ENR), (0b1 << 17), NVIC_INTERRUPT_TIM1_UP_TIM16, NVIC_INTERRUPT_TIM1_UP_TIM16 },
-    { TIM17, MATH_U16_SIZE_BITS, 0x0000FFFF, 1, 5, &(RCC->APB2RSTR), &(RCC->APB2SMENR), &(RCC->APB2ENR), (0b1 << 18), NVIC_INTERRUPT_TIM1_TRG_COM_DIR_IDX_TIM17, NVIC_INTERRUPT_TIM1_TRG_COM_DIR_IDX_TIM17 },
+    { TIM6,  MATH_U16_SIZE_BITS, 0x0000FFFF, 0, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 4),  NVIC_INTERRUPT_TIM6_DAC1_3, NVIC_INTERRUPT_TIM6_DAC1_3 },
+    { TIM7,  MATH_U16_SIZE_BITS, 0x0000FFFF, 0, 0, &(RCC->APB1RSTR1), &(RCC->APB1SMENR1), &(RCC->APB1ENR1), (0b1 << 4),  NVIC_INTERRUPT_TIM7_DAC2_4, NVIC_INTERRUPT_TIM7_DAC2_4 },
+    { TIM8,  MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB2RSTR),  &(RCC->APB2SMENR),  &(RCC->APB2ENR),  (0b1 << 13), NVIC_INTERRUPT_TIM8_UP, NVIC_INTERRUPT_TIM8_CC },
+    { TIM15, MATH_U16_SIZE_BITS, 0x0000FFFF, 2, 1, &(RCC->APB2RSTR),  &(RCC->APB2SMENR),  &(RCC->APB2ENR),  (0b1 << 16), NVIC_INTERRUPT_TIM1_BRK_TIM15, NVIC_INTERRUPT_TIM1_BRK_TIM15 },
+    { TIM16, MATH_U16_SIZE_BITS, 0x0000FFFF, 1, 5, &(RCC->APB2RSTR),  &(RCC->APB2SMENR),  &(RCC->APB2ENR),  (0b1 << 17), NVIC_INTERRUPT_TIM1_UP_TIM16, NVIC_INTERRUPT_TIM1_UP_TIM16 },
+    { TIM17, MATH_U16_SIZE_BITS, 0x0000FFFF, 1, 5, &(RCC->APB2RSTR),  &(RCC->APB2SMENR),  &(RCC->APB2ENR),  (0b1 << 18), NVIC_INTERRUPT_TIM1_TRG_COM_DIR_IDX_TIM17, NVIC_INTERRUPT_TIM1_TRG_COM_DIR_IDX_TIM17 },
 #if (STM32G4XX_REGISTERS_MCU_CATEGORY == 3) || (STM32G4XX_REGISTERS_MCU_CATEGORY == 4)
-    { TIM20, MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB2RSTR), &(RCC->APB2SMENR), &(RCC->APB2ENR), (0b1 << 20), NVIC_INTERRUPT_TIM20_UP, NVIC_INTERRUPT_TIM20_CC },
+    { TIM20, MATH_U16_SIZE_BITS, 0x0000FFFF, 4, 0, &(RCC->APB2RSTR),  &(RCC->APB2SMENR),  &(RCC->APB2ENR),  (0b1 << 20), NVIC_INTERRUPT_TIM20_UP, NVIC_INTERRUPT_TIM20_CC },
 #endif
 };
 
@@ -505,36 +505,54 @@ static void __attribute__((optimize("-O0"))) _TIM_reset(TIM_instance_t instance)
 
 #if ((STM32G4XX_DRIVERS_TIM_MODE_MASK & (TIM_MODE_MASK_STANDARD | TIM_MODE_MASK_PWM | TIM_MODE_MASK_OPM)) != 0)
 /*******************************************************************/
-static TIM_status_t _TIM_compute_psc_arr(TIM_instance_t instance, uint32_t tim_clock_hz, uint64_t expected_period_ns, uint32_t* arr) {
+static TIM_status_t _TIM_compute_psc_arr(TIM_instance_t instance, uint32_t tim_clock_hz, uint32_t period_value, TIM_unit_t period_unit, uint32_t* computed_arr) {
     // Local variables.
     TIM_status_t status = TIM_ERROR_ARR_VALUE;
-    uint64_t arr_u64 = 0;
     uint32_t psc = 0;
     uint32_t reg_value = 0;
     uint8_t idx = 0;
+    uint32_t tim_unit_factor = 0;
+    uint64_t arr = 0;
+    uint64_t expected_period_ns = 0;
     // Check parameter.
-    if ((expected_period_ns == 0) || (tim_clock_hz == 0)) goto errors;
+    if ((period_value == 0) || (tim_clock_hz == 0)) goto errors;
+    // Check unit.
+    switch (period_unit) {
+    case TIM_UNIT_NS:
+        tim_unit_factor = 1;
+        break;
+    case TIM_UNIT_US:
+        tim_unit_factor = MATH_POWER_10[3];
+        break;
+    case TIM_UNIT_MS:
+        tim_unit_factor = MATH_POWER_10[6];
+        break;
+    default:
+        status = TIM_ERROR_UNIT;
+        goto errors;
+    }
+    expected_period_ns = (((uint64_t) period_value) * ((uint64_t) tim_unit_factor));
     // Search prescaler to reach expected period.
     for (idx = 0; idx <= TIM_DESCRIPTOR[instance].width_bits; idx++) {
         // Try next power of 2.
         psc = (0b1 << idx);
         // Compute ARR.
-        arr_u64 = (expected_period_ns * ((uint64_t) tim_clock_hz));
-        arr_u64 /= (((uint64_t) MATH_POWER_10[9]) * ((uint64_t) psc));
-        arr_u64 -= 1;
+        arr = (expected_period_ns * ((uint64_t) tim_clock_hz));
+        arr /= (((uint64_t) MATH_POWER_10[9]) * ((uint64_t) psc));
+        arr -= 1;
         // Check value.
-        if ((arr_u64 > TIM_ARR_VALUE_MIN) && (arr_u64 < TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt)) {
+        if ((arr > TIM_ARR_VALUE_MIN) && (arr < TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt)) {
             // Write PSC.
             reg_value = ((TIM_DESCRIPTOR[instance].peripheral->PSC) & (~TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt));
             reg_value |= ((psc - 1) & TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt);
             TIM_DESCRIPTOR[instance].peripheral->PSC = reg_value;
             // Write ARR.
             reg_value = ((TIM_DESCRIPTOR[instance].peripheral->ARR) & (~TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt));
-            reg_value |= (((uint16_t) arr_u64) & TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt);
+            reg_value |= (((uint16_t) arr) & TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt);
             TIM_DESCRIPTOR[instance].peripheral->ARR = reg_value;
             // Update computed value.
-            if (arr != NULL) {
-                (*arr) = (uint32_t) arr_u64;
+            if (computed_arr != NULL) {
+                (*computed_arr) = ((uint32_t) arr);
             }
             // Update status and exit.
             status = TIM_SUCCESS;
@@ -628,7 +646,6 @@ TIM_status_t TIM_STD_start(TIM_instance_t instance, RCC_clock_t input_clock, uin
     // Local variables.
     TIM_status_t status = TIM_SUCCESS;
     uint32_t tim_clock_hz = 0;
-    uint64_t period_ns = 0;
     // Check instance and mode.
     _TIM_check_instance(instance);
     _TIM_check_mode(instance, TIM_MODE_STANDARD);
@@ -663,25 +680,10 @@ TIM_status_t TIM_STD_start(TIM_instance_t instance, RCC_clock_t input_clock, uin
         status = TIM_ERROR_INPUT_CLOCK;
         goto errors;
     }
-    // Check unit.
-    switch (period_unit) {
-    case TIM_UNIT_NS:
-        period_ns = ((uint64_t) period_value);
-        break;
-    case TIM_UNIT_US:
-        period_ns = ((uint64_t) period_value) * ((uint64_t) MATH_POWER_10[3]);
-        break;
-    case TIM_UNIT_MS:
-        period_ns = ((uint64_t) period_value) * ((uint64_t) MATH_POWER_10[6]);
-        break;
-    default:
-        status = TIM_ERROR_UNIT;
-        goto errors;
-    }
     // Get clock source frequency.
     RCC_get_frequency_hz(input_clock, &tim_clock_hz);
     // Compute ARR and PSC values.
-    status = _TIM_compute_psc_arr(instance, tim_clock_hz, (uint64_t) period_ns, NULL);
+    status = _TIM_compute_psc_arr(instance, tim_clock_hz, period_value, period_unit, NULL);
     if (status != TIM_SUCCESS) goto errors;
     // Generate event to update registers.
     TIM_DESCRIPTOR[instance].peripheral->EGR |= (0b1 << 0); // UG='1'.
@@ -1113,8 +1115,9 @@ TIM_status_t TIM_PWM_set_waveform(TIM_instance_t instance, TIM_channel_t channel
     TIM_status_t status = TIM_SUCCESS;
     uint32_t tim_clock_hz = 0;
     uint32_t arr = 0;
-    uint64_t period_ns = 0;
     uint32_t reg_value = 0;
+    uint64_t tmp_u64 = 0;
+    uint32_t period_value = 0;
     // Check instance, mode and channel.
     _TIM_check_instance(instance);
     _TIM_check_mode(instance, TIM_MODE_PWM);
@@ -1133,9 +1136,10 @@ TIM_status_t TIM_PWM_set_waveform(TIM_instance_t instance, TIM_channel_t channel
     // Disable update event during registers writing.
     TIM_DESCRIPTOR[instance].peripheral->CR1 |= (0b1 << 1);
     // Compute PSC and ARR values.
-    period_ns = ((uint64_t) 1000000000000);
-    period_ns /= ((uint64_t) frequency_mhz);
-    status = _TIM_compute_psc_arr(instance, tim_clock_hz, period_ns, &arr);
+    tmp_u64 = ((uint64_t) 1000000000000);
+    tmp_u64 /= ((uint64_t) frequency_mhz);
+    period_value = ((uint32_t) tmp_u64);
+    status = _TIM_compute_psc_arr(instance, tim_clock_hz, period_value, TIM_UNIT_NS, &arr);
     if (status != TIM_SUCCESS) goto errors;
     // Set duty cycle.
     reg_value = (TIM_DESCRIPTOR[instance].peripheral->CCRx[channel] & (~(TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt)));
@@ -1247,12 +1251,14 @@ errors:
 
 #if ((STM32G4XX_DRIVERS_TIM_MODE_MASK & TIM_MODE_MASK_OPM) != 0)
 /*******************************************************************/
-TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, uint32_t delay_ns, uint32_t pulse_duration_ns, uint8_t internal_irq_enable) {
+TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, uint32_t delay_us, uint32_t pulse_duration_us, uint8_t internal_irq_enable) {
     // Local variables.
     TIM_status_t status = TIM_SUCCESS;
     uint32_t tim_clock_hz = 0;
+    uint32_t period_value = (delay_us + pulse_duration_us);
+    uint64_t tmp_u64 = 0;
     uint32_t arr = 0;
-    uint64_t ccr = 0;
+    uint32_t ccr = 0;
     uint32_t reg_value = 0;
     uint8_t idx = 0;
     // Check instance and mode.
@@ -1261,8 +1267,12 @@ TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, 
     // Directly exit if there is mask is null.
     if (channels_mask == 0) goto errors;
     // Check parameters.
-    if ((delay_ns + pulse_duration_ns) == 0) {
+    if ((pulse_duration_us == 0) || (pulse_duration_us > (MATH_U32_MAX >> 1))) {
         status = TIM_ERROR_PULSE;
+        goto errors;
+    }
+    if (delay_us > (MATH_U32_MAX >> 1)) {
+        status = TIM_ERROR_DELAY;
         goto errors;
     }
     // Get clock source frequency.
@@ -1279,11 +1289,12 @@ TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, 
         NVIC_disable_interrupt(TIM_DESCRIPTOR[instance].nvic_interrupt_up);
     }
     // Compute PSC and ARR values.
-    status = _TIM_compute_psc_arr(instance, tim_clock_hz, ((uint64_t) delay_ns + (uint64_t) pulse_duration_ns), &arr);
+    status = _TIM_compute_psc_arr(instance, tim_clock_hz, period_value, TIM_UNIT_US, &arr);
     if (status != TIM_SUCCESS) goto errors;
     // Compute CCR value.
-    ccr = (((uint64_t) delay_ns) * ((uint64_t) (arr + 1)));
-    ccr /= (((uint64_t) delay_ns) + ((uint64_t) pulse_duration_ns));
+    tmp_u64 = (((uint64_t) delay_us) * ((uint64_t) (arr + 1)));
+    tmp_u64 /= (((uint64_t) delay_us) + ((uint64_t) pulse_duration_us));
+    ccr = ((uint32_t) tmp_u64);
     // Channels loop.
     for (idx = 0; idx < TIM_DESCRIPTOR[instance].number_of_channels; idx++) {
         // Check mask.
