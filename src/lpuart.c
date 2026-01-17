@@ -34,6 +34,12 @@
 #define LPUART_BRR_VALUE_MIN                0x00300
 #define LPUART_BRR_VALUE_MAX                LPUART_REGISTER_MASK_BRR
 
+#if (STM32G4XX_DRIVERS_RCC_LSE_MODE == 2)
+#define LPUART_BRR_TYPE                     uint32_t
+#else
+#define LPUART_BRR_TYPE                     uint64_t
+#endif
+
 #define LPUART_NUMBER_OF_PRESCALER_VALUES   12
 
 /*** LPUART local structures ***/
@@ -83,10 +89,10 @@ static LPUART_status_t _LPUART_set_baud_rate(uint32_t baud_rate) {
     RCC_clock_t lpuart_clock;
     uint32_t lpuart_clock_hz = 0;
     uint8_t prescaler = 0;
-    uint64_t brr = 0;
+    LPUART_BRR_TYPE brr = 0;
     uint8_t brr_valid = 0;
     uint32_t reg_value = 0;
-#if (STM32G4XX_DRIVERS_RCC_LSE_MODE != 0)
+#if (STM32G4XX_DRIVERS_RCC_LSE_MODE == 1)
     uint8_t lse_status = 0;
 #endif
     // Ensure peripheral is disabled.
@@ -97,7 +103,7 @@ static LPUART_status_t _LPUART_set_baud_rate(uint32_t baud_rate) {
     // Use HSI.
     RCC->CCIPR |= (0b10 << 10); // LPUART1SEL='10'.
     lpuart_clock = RCC_CLOCK_HSI;
-#else
+#elif (STM32G4XX_DRIVERS_RCC_LSE_MODE == 1)
     // Get LSE status.
     RCC_get_status(RCC_CLOCK_LSE, &lse_status);
     // Check LSE status and baud rate.
@@ -111,14 +117,18 @@ static LPUART_status_t _LPUART_set_baud_rate(uint32_t baud_rate) {
         RCC->CCIPR |= (0b10 << 10); // LPUART1SEL='10'.
         lpuart_clock = RCC_CLOCK_HSI;
     }
+#else
+    // Use LSE.
+    RCC->CCIPR |= (0b11 << 10); // LPUART1SEL='11'.
+    lpuart_clock = RCC_CLOCK_LSE;
 #endif
     // Get clock source frequency.
     RCC_get_frequency_hz(lpuart_clock, &lpuart_clock_hz);
     // Prescaler loop.
     for (prescaler = 0; prescaler < LPUART_NUMBER_OF_PRESCALER_VALUES; prescaler++) {
         // Compute register value.
-        brr = ((uint64_t) lpuart_clock_hz) << 8;
-        brr /= (((uint64_t) baud_rate) * ((uint64_t) (LPUART_PRESCALER[prescaler] + 1)));
+        brr = (((LPUART_BRR_TYPE) lpuart_clock_hz) << 8);
+        brr /= (((LPUART_BRR_TYPE) baud_rate) * ((LPUART_BRR_TYPE) (LPUART_PRESCALER[prescaler] + 1)));
         // Check value.
         if ((brr >= LPUART_BRR_VALUE_MIN) && (brr <= LPUART_BRR_VALUE_MAX)) {
             brr_valid = 1;
