@@ -43,6 +43,7 @@ Here is the versions compatibility table:
 | `STM32G4XX_DRIVERS_EXTI_GPIO_MASK` | `0x0000` to `0xFFFF` | 16-bits field which defines the enabled EXTI GPIO lines. |
 | `STM32G4XX_DRIVERS_LPUART_RS485` | `defined` / `undefined` | Enable or disable RS485 operation. |
 | `STM32G4XX_DRIVERS_LPUART_DISABLE_TX_0` | `defined` / `undefined` | Disable the transmission of byte 0x00 if defined. |
+| `STM32G4XX_DRIVERS_LPUART_HIGH_BAUD_RATE` | `defined` / `undefined` | Enable or disable high baud rate support (> 2400bauds). |
 | `STM32G4XX_DRIVERS_RCC_HSE_ENABLE` | `defined` / `undefined` | Enable or disable external oscillator functions. |
 | `STM32G4XX_DRIVERS_RCC_HSE_FREQUENCY_HZ` | `<value>` | Defines the external high speed crystal frequency in Hz (if used). |
 | `STM32G4XX_DRIVERS_RCC_LSE_MODE` | `0` / `1` / `2` | LSE crystal mode: `0` = disabled `1` = enabled with LSI/HSI fallback `2` = enabled and mandatory. |
@@ -71,6 +72,7 @@ cmake -DCMAKE_TOOLCHAIN_FILE="<toolchain_file_path>" \
       -DSTM32G4XX_DRIVERS_EXTI_GPIO_MASK=0xFFFF \
       -DSTM32G4XX_DRIVERS_LPUART_RS485=OFF \
       -DSTM32G4XX_DRIVERS_LPUART_DISABLE_TX_0=ON \
+      -DSTM32G4XX_DRIVERS_LPUART_HIGH_BAUD_RATE=ON \
       -DSTM32G4XX_DRIVERS_RCC_HSE_ENABLE=OFF \
       -DSTM32G4XX_DRIVERS_RCC_HSE_FREQUENCY_HZ=16000000 \
       -DSTM32G4XX_DRIVERS_RCC_LSE_MODE=1 \
