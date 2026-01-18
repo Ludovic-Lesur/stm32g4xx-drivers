@@ -46,7 +46,7 @@ if(${BUILD_MODE} STREQUAL STATIC)
     add_compilation_flag(STM32G4XX_DRIVERS_RCC_LSE_FREQUENCY_HZ "Defines the external low speed crystal frequency in Hz (if used)." 32768)
     add_compilation_flag(STM32G4XX_DRIVERS_RTC_WAKEUP_PERIOD_SECONDS "RTC wakeup period in seconds." 10)
     add_compilation_flag(STM32G4XX_DRIVERS_RTC_ALARM_MASK "2-bits field which defines the enabled RTC alarms." 0x03)
-    add_compilation_flag(STM32G4XX_DRIVERS_TIM_MODE_MASK "5-bits field which defines the enabled timer operation modes: 0 = standard, 1 = multi-channel, 2 = calibration, 3 = PWM, 4 = one pulse." 0x7F)
+    add_compilation_flag(STM32G4XX_DRIVERS_TIM_MODE_MASK "5-bits field which defines the enabled timer operation modes: 0 = standard, 1 = multi-channel, 2 = calibration, 3 = PWM, 4 = one pulse." 0x3F)
     add_compilation_flag(STM32G4XX_DRIVERS_USART_RS485 "Enable or disable RS485 operation." OFF)
     add_compilation_flag(STM32G4XX_DRIVERS_USART_DISABLE_TX_0 "Disable the transmission of byte 0x00 if defined." ON)
     
