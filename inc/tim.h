@@ -136,9 +136,9 @@ typedef enum {
  * \brief Timer unit list
  *******************************************************************/
 typedef enum {
-    TIM_UNIT_NS = 0,
-    TIM_UNIT_US,
+    TIM_UNIT_US = 0,
     TIM_UNIT_MS,
+    TIM_UNIT_NS,
     TIM_UNIT_LAST
 } TIM_unit_t;
 

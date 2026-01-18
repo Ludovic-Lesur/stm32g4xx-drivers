@@ -42,6 +42,9 @@
 #define TIM_CAL_MEDIAN_FILTER_SIZE          9
 #define TIM_CAL_CENTER_AVERAGE_SIZE         3
 
+#define TIM_OPM_PULSE_US_MAX                (MATH_U32_MAX >> 1)
+#define TIM_OPM_DELAY_US_MAX                (MATH_U32_MAX >> 1)
+
 /*** TIM local structures ***/
 
 /*******************************************************************/
@@ -514,18 +517,18 @@ static TIM_status_t _TIM_compute_psc_arr(TIM_instance_t instance, uint32_t tim_c
     uint32_t tim_unit_factor = 0;
     uint64_t arr = 0;
     uint64_t expected_period_ns = 0;
-    // Check parameter.
-    if ((period_value == 0) || (tim_clock_hz == 0)) goto errors;
+    // Check parameters.
+    if ((tim_clock_hz == 0) || (period_value == 0)) goto errors;
     // Check unit.
     switch (period_unit) {
-    case TIM_UNIT_NS:
-        tim_unit_factor = 1;
-        break;
     case TIM_UNIT_US:
         tim_unit_factor = MATH_POWER_10[3];
         break;
     case TIM_UNIT_MS:
         tim_unit_factor = MATH_POWER_10[6];
+        break;
+    case TIM_UNIT_NS:
+        tim_unit_factor = 1;
         break;
     default:
         status = TIM_ERROR_UNIT;
@@ -1116,8 +1119,8 @@ TIM_status_t TIM_PWM_set_waveform(TIM_instance_t instance, TIM_channel_t channel
     uint32_t tim_clock_hz = 0;
     uint32_t arr = 0;
     uint32_t reg_value = 0;
-    uint64_t tmp_u64 = 0;
     uint32_t period_value = 0;
+    uint64_t tmp_u64 = 0;
     // Check instance, mode and channel.
     _TIM_check_instance(instance);
     _TIM_check_mode(instance, TIM_MODE_PWM);
@@ -1255,7 +1258,6 @@ TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, 
     // Local variables.
     TIM_status_t status = TIM_SUCCESS;
     uint32_t tim_clock_hz = 0;
-    uint32_t period_value = (delay_us + pulse_duration_us);
     uint64_t tmp_u64 = 0;
     uint32_t arr = 0;
     uint32_t ccr = 0;
@@ -1267,11 +1269,11 @@ TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, 
     // Directly exit if there is mask is null.
     if (channels_mask == 0) goto errors;
     // Check parameters.
-    if ((pulse_duration_us == 0) || (pulse_duration_us > (MATH_U32_MAX >> 1))) {
+    if ((pulse_duration_us == 0) || (pulse_duration_us > TIM_OPM_PULSE_US_MAX)) {
         status = TIM_ERROR_PULSE;
         goto errors;
     }
-    if (delay_us > (MATH_U32_MAX >> 1)) {
+    if (delay_us > TIM_OPM_DELAY_US_MAX) {
         status = TIM_ERROR_DELAY;
         goto errors;
     }
@@ -1289,7 +1291,7 @@ TIM_status_t TIM_OPM_make_pulse(TIM_instance_t instance, uint8_t channels_mask, 
         NVIC_disable_interrupt(TIM_DESCRIPTOR[instance].nvic_interrupt_up);
     }
     // Compute PSC and ARR values.
-    status = _TIM_compute_psc_arr(instance, tim_clock_hz, period_value, TIM_UNIT_US, &arr);
+    status = _TIM_compute_psc_arr(instance, tim_clock_hz, (delay_us + pulse_duration_us), TIM_UNIT_US, &arr);
     if (status != TIM_SUCCESS) goto errors;
     // Compute CCR value.
     tmp_u64 = (((uint64_t) delay_us) * ((uint64_t) (arr + 1)));
