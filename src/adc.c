@@ -730,25 +730,25 @@ errors:
 }
 
 /*******************************************************************/
-ADC_status_t _ADC_compute_tmcu(int32_t vref_mv, int32_t tmcu_12bits, int32_t* tmcu_degrees) {
+ADC_status_t _ADC_compute_mcu_temperature(int32_t vref_mv, int32_t mcu_temperature_12bits, int32_t* mcu_temperature_degrees) {
     // Local variables.
     ADC_status_t status = ADC_SUCCESS;
     int32_t raw_temp_calib_mv = 0;
     int32_t temp_calib_degrees = 0;
     // Check parameters.
-    if (tmcu_12bits > ADC_FULL_SCALE) {
+    if (mcu_temperature_12bits > ADC_FULL_SCALE) {
         status = ADC_ERROR_DATA;
         goto errors;
     }
-    if (tmcu_degrees == NULL) {
+    if (mcu_temperature_degrees == NULL) {
         status = ADC_ERROR_NULL_PARAMETER;
         goto errors;
     }
     // Compute temperature according to MCU factory calibration.
-    raw_temp_calib_mv = ((tmcu_12bits * vref_mv) / (ADC_TS_VCC_CALIB_MV)) - ADC_TS_CAL1;
+    raw_temp_calib_mv = ((mcu_temperature_12bits * vref_mv) / (ADC_TS_VCC_CALIB_MV)) - ADC_TS_CAL1;
     temp_calib_degrees = raw_temp_calib_mv * (ADC_TS_CAL2_TEMP - ADC_TS_CAL1_TEMP);
     temp_calib_degrees = (temp_calib_degrees) / (ADC_TS_CAL2 - ADC_TS_CAL1);
-    (*tmcu_degrees) = temp_calib_degrees + ADC_TS_CAL1_TEMP;
+    (*mcu_temperature_degrees) = temp_calib_degrees + ADC_TS_CAL1_TEMP;
 errors:
     return status;
 }
@@ -964,37 +964,37 @@ errors:
 
 #ifdef STM32G4XX_DRIVERS_ADC_VREF_MV
 /*******************************************************************/
-ADC_status_t ADC_compute_vmcu(int32_t vbat_12bits, int32_t* vmcu_mv) {
+ADC_status_t ADC_compute_mcu_voltage(int32_t adc_channel_vbat_12bits, int32_t* mcu_voltage_mv) {
     // Local variables.
     ADC_status_t status = ADC_SUCCESS;
     // Check parameters.
-    if (vbat_12bits > ADC_FULL_SCALE) {
+    if (adc_channel_vbat_12bits > ADC_FULL_SCALE) {
         status = ADC_ERROR_DATA;
         goto errors;
     }
-    if (vmcu_mv == NULL) {
+    if (mcu_voltage_mv == NULL) {
         status = ADC_ERROR_NULL_PARAMETER;
         goto errors;
     }
-    (*vmcu_mv) = (vbat_12bits * STM32G4XX_DRIVERS_ADC_VREF_MV * ADC_VBAT_VOLTAGE_DIVIDER) / (ADC_FULL_SCALE);
+    (*mcu_voltage_mv) = (adc_channel_vbat_12bits * STM32G4XX_DRIVERS_ADC_VREF_MV * ADC_VBAT_VOLTAGE_DIVIDER) / (ADC_FULL_SCALE);
 errors:
     return status;
 }
 #else
 /*******************************************************************/
-ADC_status_t ADC_compute_vmcu(int32_t ref_voltage_12bits, int32_t ref_voltage_mv, int32_t* vmcu_mv) {
+ADC_status_t ADC_compute_mcu_voltage(int32_t reference_voltage_12bits, int32_t reference_voltage_mv, int32_t* mcu_voltage_mv) {
     // Local variables.
     ADC_status_t status = ADC_SUCCESS;
     // Check parameters.
-    if (ref_voltage_12bits > ADC_FULL_SCALE) {
+    if (reference_voltage_12bits > ADC_FULL_SCALE) {
         status = ADC_ERROR_DATA;
         goto errors;
     }
-    if (vmcu_mv == NULL) {
+    if (mcu_voltage_mv == NULL) {
         status = ADC_ERROR_NULL_PARAMETER;
         goto errors;
     }
-    (*vmcu_mv) = (ref_voltage_mv * ADC_FULL_SCALE) / (ref_voltage_12bits);
+    (*mcu_voltage_mv) = (reference_voltage_mv * ADC_FULL_SCALE) / (reference_voltage_12bits);
 errors:
     return status;
 }
@@ -1002,13 +1002,13 @@ errors:
 
 #ifdef STM32G4XX_DRIVERS_ADC_VREF_MV
 /*******************************************************************/
-ADC_status_t ADC_compute_tmcu(int32_t tmcu_12bits, int32_t* tmcu_degrees) {
-    return _ADC_compute_tmcu(STM32G4XX_DRIVERS_ADC_VREF_MV, tmcu_12bits, tmcu_degrees);
+ADC_status_t ADC_compute_mcu_temperature(int32_t mcu_temperature_12bits, int32_t* mcu_temperature_degrees) {
+    return _ADC_compute_mcu_temperature(STM32G4XX_DRIVERS_ADC_VREF_MV, mcu_temperature_12bits, mcu_temperature_degrees);
 }
 #else
 /*******************************************************************/
-ADC_status_t ADC_compute_tmcu(int32_t vref_mv, int32_t tmcu_12bits, int32_t* tmcu_degrees) {
-    return _ADC_compute_tmcu(vref_mv, tmcu_12bits, tmcu_degrees);
+ADC_status_t ADC_compute_mcu_temperature(int32_t vref_mv, int32_t mcu_temperature_12bits, int32_t* mcu_temperature_degrees) {
+    return _ADC_compute_mcu_temperature(vref_mv, mcu_temperature_12bits, mcu_temperature_degrees);
 }
 #endif
 
