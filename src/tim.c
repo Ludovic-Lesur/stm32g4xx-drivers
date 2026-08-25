@@ -42,6 +42,8 @@
 #define TIM_CAL_MEDIAN_FILTER_SIZE          9
 #define TIM_CAL_CENTER_AVERAGE_SIZE         3
 
+#define TIM_PWM_FREQUENCY_THRESHOLD_MHZ     250
+
 #define TIM_OPM_PULSE_US_MAX                (MATH_U32_MAX >> 1)
 #define TIM_OPM_DELAY_US_MAX                (MATH_U32_MAX >> 1)
 
@@ -1120,6 +1122,7 @@ TIM_status_t TIM_PWM_set_waveform(TIM_instance_t instance, TIM_channel_t channel
     uint32_t arr = 0;
     uint32_t reg_value = 0;
     uint32_t period_value = 0;
+    TIM_unit_t period_unit = TIM_UNIT_LAST;
     uint64_t tmp_u64 = 0;
     // Check instance, mode and channel.
     _TIM_check_instance(instance);
@@ -1139,10 +1142,19 @@ TIM_status_t TIM_PWM_set_waveform(TIM_instance_t instance, TIM_channel_t channel
     // Disable update event during registers writing.
     TIM_DESCRIPTOR[instance].peripheral->CR1 |= (0b1 << 1);
     // Compute PSC and ARR values.
-    tmp_u64 = ((uint64_t) 1000000000000);
-    tmp_u64 /= ((uint64_t) frequency_mhz);
-    period_value = ((uint32_t) tmp_u64);
-    status = _TIM_compute_psc_arr(instance, tim_clock_hz, period_value, TIM_UNIT_NS, &arr);
+    if (frequency_mhz < TIM_PWM_FREQUENCY_THRESHOLD_MHZ) {
+        // Period cannot be computed at nano-second precision because it would require more than 32-bits.
+        period_value = (MATH_POWER_10[9] / frequency_mhz);
+        period_unit = TIM_UNIT_US;
+    }
+    else {
+        // Period can be computed at nano-second precision.
+        tmp_u64 = ((uint64_t) 1000000000000);
+        tmp_u64 /= ((uint64_t) frequency_mhz);
+        period_value = ((uint32_t) tmp_u64);
+        period_unit = TIM_UNIT_NS;
+    }
+    status = _TIM_compute_psc_arr(instance, tim_clock_hz, period_value, period_unit, &arr);
     if (status != TIM_SUCCESS) goto errors;
     // Set duty cycle.
     reg_value = (TIM_DESCRIPTOR[instance].peripheral->CCRx[channel] & (~(TIM_DESCRIPTOR[instance].register_mask_arr_psc_ccr_cnt)));
