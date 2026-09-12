@@ -14,6 +14,7 @@
 #include "flash.h"
 
 #include "flash_registers.h"
+#include "nvic.h"
 #include "types.h"
 
 /*** FLASH linker generated symbols ***/
@@ -28,6 +29,8 @@ extern uint32_t __flash_size__;
 
 #define FLASH_ADDRESS           ((uint32_t) (&__flash_address__))
 #define FLASH_SIZE_BYTES        ((uint32_t) (&__flash_size__))
+
+#define FLASH_ERROR_FLAGS_MASK  0x0000C3FB
 
 /*** FLASH local functions ***/
 
@@ -60,12 +63,11 @@ static FLASH_status_t _FLASH_check_busy(FLASH_status_t timeout_error_code) {
         loop_count++;
         if (loop_count > FLASH_TIMEOUT_COUNT) {
             status = timeout_error_code;
-            goto errors;
         }
     }
-errors:
-    // Clear all flags.
-    FLASH->SR = 0x0000C3FB;
+    // Clear all status flags.
+    FLASH->SR = FLASH_ERROR_FLAGS_MASK;
+    // Return status.
     return status;
 }
 
@@ -74,7 +76,7 @@ static FLASH_status_t __attribute__((optimize("-O0"))) _FLASH_unlock(void) {
     // Local variables.
     FLASH_status_t status = FLASH_SUCCESS;
     // Check memory is ready.
-    status = _FLASH_check_busy(FLASH_ERROR_UNLOCK);
+    status = _FLASH_check_busy(FLASH_ERROR_UNLOCK_READY);
     if (status != FLASH_SUCCESS) goto errors;
     // Check the memory is not already unlocked.
     if (((FLASH->CR) & (0b1 << 31)) != 0) {
@@ -82,21 +84,19 @@ static FLASH_status_t __attribute__((optimize("-O0"))) _FLASH_unlock(void) {
         FLASH->KEYR = 0x45670123;
         FLASH->KEYR = 0xCDEF89AB;
     }
+    // Check if unlock sequence completed successfully.
+    if (((FLASH->CR) & (0b1 << 31)) != 0) {
+       status = FLASH_ERROR_UNLOCK_SEQUENCE;
+       goto errors;
+    }
 errors:
     return status;
 }
 
 /*******************************************************************/
-static FLASH_status_t __attribute__((optimize("-O0"))) _FLASH_lock(void) {
-    // Local variables.
-    FLASH_status_t status = FLASH_SUCCESS;
-    // Check memory is ready.
-    status = _FLASH_check_busy(FLASH_ERROR_LOCK);
-    if (status != FLASH_SUCCESS) goto errors;
+static void __attribute__((optimize("-O0"))) _FLASH_lock(void) {
     // Lock sequence.
     FLASH->CR |= (0b1 << 31);
-errors:
-    return status;
 }
 
 /*******************************************************************/
@@ -159,18 +159,23 @@ errors:
 FLASH_status_t __attribute__((optimize("-O0"))) FLASH_read_double_word(uint32_t absolute_address, uint64_t* data) {
     // Local variables.
     FLASH_status_t status = FLASH_SUCCESS;
+    uint8_t global_interrupts = NVIC_get_global_interrupts();
     // Check parameters.
     _FLASH_check_address(absolute_address);
     if (data == NULL) {
         status = FLASH_ERROR_NULL_PARAMETER;
         goto errors;
     }
+    // Disable all interrupts.
+    NVIC_set_global_interrupts(0);
     // Check there is no pending operation.
-    status = _FLASH_check_busy(FLASH_ERROR_READ);
+    status = _FLASH_check_busy(FLASH_ERROR_READ_READY);
     if (status != FLASH_SUCCESS) goto errors;
     // Read data.
     (*data) = *((uint64_t*) (absolute_address));
 errors:
+    // Restore interrupts.
+    NVIC_set_global_interrupts(global_interrupts);
     return status;
 }
 
@@ -178,10 +183,17 @@ errors:
 FLASH_status_t __attribute__((optimize("-O0"))) FLASH_write_double_word(uint32_t absolute_address, uint64_t data) {
     // Local variables.
     FLASH_status_t status = FLASH_SUCCESS;
+    uint8_t global_interrupts = NVIC_get_global_interrupts();
+    uint64_t read_data = 0;
     // Check parameters.
     _FLASH_check_address(absolute_address);
+    // Disable all interrupts.
+    NVIC_set_global_interrupts(0);
     // Unlock memory.
     status = _FLASH_unlock();
+    if (status != FLASH_SUCCESS) goto errors;
+    // Check there is no pending operation.
+    status = _FLASH_check_busy(FLASH_ERROR_WRITE_READY);
     if (status != FLASH_SUCCESS) goto errors;
     // Disable data cache.
     FLASH->ACR &= ~(0b1 << 10);
@@ -190,18 +202,16 @@ FLASH_status_t __attribute__((optimize("-O0"))) FLASH_write_double_word(uint32_t
     // Write first word.
     *((uint32_t*) (absolute_address + 0)) = (uint32_t) (data & 0xFFFFFFFF);
     __asm volatile ("isb");
-    *((uint32_t*) (absolute_address + 4)) = (uint32_t) ((data >> 32) & 0xFFFFFFFF);;
+    *((uint32_t*) (absolute_address + 4)) = (uint32_t) ((data >> 32) & 0xFFFFFFFF);
     // Wait the end of operation.
-    status = _FLASH_check_busy(FLASH_ERROR_WRITE);
+    status = _FLASH_check_busy(FLASH_ERROR_WRITE_COMPLETION);
     if (status != FLASH_SUCCESS) goto errors;
-    // Reset programming bit.
-    FLASH->CR &= ~(0b1 << 0);
-    // Flush instruction and data caches.
-    _FLASH_flush_caches();
-    // Lock memory.
-    status = _FLASH_lock();
-    if (status != FLASH_SUCCESS) goto errors;
-    return status;
+    // Verify write operation.
+    read_data = *((uint64_t*) (absolute_address));
+    if (read_data != data) {
+        status = FLASH_ERROR_WRITE_VERIFY;
+        goto errors;
+    }
 errors:
     // Reset programming bit.
     FLASH->CR &= ~(0b1 << 0);
@@ -209,6 +219,8 @@ errors:
     _FLASH_flush_caches();
     // Lock memory.
     _FLASH_lock();
+    // Restore interrupts.
+    NVIC_set_global_interrupts(global_interrupts);
     return status;
 }
 
@@ -216,11 +228,14 @@ errors:
 FLASH_status_t __attribute__((optimize("-O0"))) FLASH_erase_page(uint32_t page_index) {
     // Local variables.
     FLASH_status_t status = FLASH_SUCCESS;
+    uint8_t global_interrupts = NVIC_get_global_interrupts();
     // Check parameter.
     if (page_index >= (FLASH_SIZE_BYTES / FLASH_PAGE_SIZE_BYTES)) {
         status = FLASH_ERROR_PAGE_INDEX;
         goto errors;
     }
+    // Disable all interrupts.
+    NVIC_set_global_interrupts(0);
     // Unlock memory.
     status = _FLASH_unlock();
     if (status != FLASH_SUCCESS) goto errors;
@@ -234,14 +249,6 @@ FLASH_status_t __attribute__((optimize("-O0"))) FLASH_erase_page(uint32_t page_i
     // Wait the end of operation.
     status = _FLASH_check_busy(FLASH_ERROR_ERASE);
     if (status != FLASH_SUCCESS) goto errors;
-    // Reset page erase bit.
-    FLASH->CR &= ~(0b1 << 1);
-    // Flush instruction and data caches.
-    _FLASH_flush_caches();
-    // Lock memory.
-    status = _FLASH_lock();
-    if (status != FLASH_SUCCESS) goto errors;
-    return status;
 errors:
     // Reset page erase bit.
     FLASH->CR &= ~(0b1 << 1);
@@ -249,6 +256,8 @@ errors:
     _FLASH_flush_caches();
     // Lock memory.
     _FLASH_lock();
+    // Restore interrupts.
+    NVIC_set_global_interrupts(global_interrupts);
     return status;
 }
 

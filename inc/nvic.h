@@ -140,6 +140,24 @@ typedef enum {
 void NVIC_init(void);
 
 /*!******************************************************************
+ * \fn void NVIC_set_global_interrupts(uint8_t enable)
+ * \brief Enable or disable interrupts globally.
+ * \param[in]   enable: Disable (0) or enable (otherwise) all device interrupts.
+ * \param[out]  none
+ * \retval      none
+ *******************************************************************/
+void NVIC_set_global_interrupts(uint8_t enable);
+
+/*!******************************************************************
+ * \fn uint8_t NVIC_get_global_interrupts(void)
+ * \brief Get global interrupts status.
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      0 if device interrupts are globally disabled, 1 otherwise.
+ *******************************************************************/
+uint8_t NVIC_get_global_interrupts(void);
+
+/*!******************************************************************
  * \fn void NVIC_enable_interrupt(NVIC_interrupt_t irq_index)
  * \brief Enable interrupt.
  * \param[in]   irq_index: Interrupt to enable.
