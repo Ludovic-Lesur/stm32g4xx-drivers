@@ -39,16 +39,16 @@ extern uint32_t __flash_size__;
     /* Check range */ \
     if (address < FLASH_ADDRESS) { \
         status = FLASH_ERROR_ADDRESS_UNDERFLOW; \
-        goto errors; \
+        goto end; \
     } \
     if (address >= (FLASH_ADDRESS + FLASH_SIZE_BYTES)) { \
         status = FLASH_ERROR_ADDRESS_OVERFLOW; \
-        goto errors; \
+        goto end; \
     } \
     /* Check alignment */ \
     if ((address % FLASH_WORD_SIZE_BYTES) != 0) { \
         status = FLASH_ERROR_ADDRESS_ALIGNMENT; \
-        goto errors; \
+        goto end; \
     } \
 }
 
@@ -164,7 +164,7 @@ FLASH_status_t __attribute__((optimize("-O0"))) FLASH_read_double_word(uint32_t 
     _FLASH_check_address(absolute_address);
     if (data == NULL) {
         status = FLASH_ERROR_NULL_PARAMETER;
-        goto errors;
+        goto end;
     }
     // Disable all interrupts.
     NVIC_set_global_interrupts(0);
@@ -176,6 +176,7 @@ FLASH_status_t __attribute__((optimize("-O0"))) FLASH_read_double_word(uint32_t 
 errors:
     // Restore interrupts.
     NVIC_set_global_interrupts(global_interrupts);
+end:
     return status;
 }
 
@@ -221,6 +222,7 @@ errors:
     _FLASH_lock();
     // Restore interrupts.
     NVIC_set_global_interrupts(global_interrupts);
+end:
     return status;
 }
 
@@ -232,7 +234,7 @@ FLASH_status_t __attribute__((optimize("-O0"))) FLASH_erase_page(uint32_t page_i
     // Check parameter.
     if (page_index >= (FLASH_SIZE_BYTES / FLASH_PAGE_SIZE_BYTES)) {
         status = FLASH_ERROR_PAGE_INDEX;
-        goto errors;
+        goto end;
     }
     // Disable all interrupts.
     NVIC_set_global_interrupts(0);
@@ -258,6 +260,7 @@ errors:
     _FLASH_lock();
     // Restore interrupts.
     NVIC_set_global_interrupts(global_interrupts);
+end:
     return status;
 }
 
