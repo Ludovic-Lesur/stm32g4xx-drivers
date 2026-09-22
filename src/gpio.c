@@ -181,6 +181,12 @@ errors:
 void GPIO_init(void) {
     // Enable all GPIOx clocks.
     RCC->AHB2ENR |= (0b111111 << 0); // GPIOxEN='1'.
+    // Remove all default alternate functions.
+    GPIOA->MODER = 0xEBFFFFFF;
+    GPIOB->MODER = 0xFFFFFFFF;
+    // Remove all default pull resistors.
+    GPIOA->PUPDR = 0x24000000;
+    GPIOB->PUPDR = 0x00000000;
 }
 
 /*******************************************************************/
